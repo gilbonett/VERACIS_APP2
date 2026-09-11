@@ -1,0 +1,24 @@
+{
+	"nodes":[
+		{"id":"1000000000000001","type":"text","text":"# 🌿 Fluxo de Contribuição — Padrão de Git\n\nAzure DevOps · Conventional Commits · Squash merge","x":-40,"y":-220,"width":2140,"height":100},
+		{"id":"1000000000000002","type":"text","text":"## 🚀 Pipeline de Contribuição\n\n5 etapas, branch → merge","x":890,"y":-80,"width":320,"height":140,"color":"1"},
+		{"id":"5000000000000001","type":"file","file":"Contribuicao/contribuicao.md","x":1260,"y":-80,"width":320,"height":140,"color":"1"},
+		{"id":"2000000000000001","type":"text","text":"## 1. Branch\n\n**Com work item:**\n```\n<work-item-id>-descricao-curta\n```\n`git checkout -b 1920-corrige-sse-leak`\n\n**Sem work item:**\n```\n<tipo>-descricao-curta\n```\n`git checkout -b fix-validacao-email`\n\nTipos: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert","x":0,"y":180,"width":380,"height":380,"color":"5"},
+		{"id":"2000000000000002","type":"text","text":"## 2. Commits\n\nConventional Commits:\n```\n<tipo>(<escopo>): <descrição>\n```\n`feat(api): adiciona endpoint de notificações`\n\n**Boas práticas:**\n- Imperativo (\"adiciona\")\n- Minúscula após tipo:\n- Sem ponto final\n- Até 72 chars na 1ª linha\n- Corpo explica o porquê\n\n**Breaking change:**\n`feat(api)!: ...` + rodapé `BREAKING CHANGE:`","x":430,"y":180,"width":380,"height":380,"color":"3"},
+		{"id":"2000000000000003","type":"text","text":"## 3. Sincronizar com main\n\nAntes de abrir/atualizar PR — rebase, sem merge commit.\n\n```bash\ngit fetch origin\ngit rebase origin/main\n# ou\ngit pull --rebase\n```\n\nResolve conflitos → `git rebase --continue` → `git push --force-with-lease` (nunca `--force` puro)","x":860,"y":180,"width":380,"height":380,"color":"2"},
+		{"id":"2000000000000004","type":"text","text":"## 4. Pull Request\n\nTítulo = padrão de commit (vira mensagem do squash).\n\n**Descrição:**\n- 📝 Descrição\n- 🔗 Work Item\n- 🧪 Como Testar\n- 📸 Screenshots\n- ✅ Checklist\n\n**Antes de abrir:**\n- [ ] Testes passam\n- [ ] Lint sem erros\n- [ ] Rebase com main\n- [ ] Descrição preenchida","x":1290,"y":180,"width":380,"height":380,"color":"6"},
+		{"id":"2000000000000005","type":"text","text":"## 5. Merge\n\nCompletar PR no Azure DevOps com **Squash commit**.\n\nTodos os commits → 1 commit na main, mensagem = título do PR.\n\nApós merge: apaga branch remota (opção padrão do Azure DevOps).","x":1720,"y":180,"width":380,"height":380,"color":"4"}
+	],
+	"edges":[
+		{"id":"4000000000000001","fromNode":"1000000000000002","fromSide":"bottom","toNode":"2000000000000001","toSide":"top","color":"1"},
+		{"id":"4000000000000002","fromNode":"1000000000000002","fromSide":"bottom","toNode":"2000000000000002","toSide":"top","color":"1"},
+		{"id":"4000000000000003","fromNode":"1000000000000002","fromSide":"bottom","toNode":"2000000000000003","toSide":"top","color":"1"},
+		{"id":"4000000000000004","fromNode":"1000000000000002","fromSide":"bottom","toNode":"2000000000000004","toSide":"top","color":"1"},
+		{"id":"4000000000000005","fromNode":"1000000000000002","fromSide":"bottom","toNode":"2000000000000005","toSide":"top","color":"1"},
+		{"id":"4000000000000006","fromNode":"1000000000000002","fromSide":"right","toNode":"5000000000000001","toSide":"left","label":"documentação completa"},
+		{"id":"3000000000000001","fromNode":"2000000000000001","fromSide":"right","toNode":"2000000000000002","toSide":"left","label":"próximo"},
+		{"id":"3000000000000002","fromNode":"2000000000000002","fromSide":"right","toNode":"2000000000000003","toSide":"left","label":"próximo"},
+		{"id":"3000000000000003","fromNode":"2000000000000003","fromSide":"right","toNode":"2000000000000004","toSide":"left","label":"próximo"},
+		{"id":"3000000000000004","fromNode":"2000000000000004","fromSide":"right","toNode":"2000000000000005","toSide":"left","label":"próximo"}
+	]
+}

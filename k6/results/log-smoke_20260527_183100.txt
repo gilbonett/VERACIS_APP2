@@ -1,0 +1,86 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: k6/scenarios/smoke/smoke.test.js
+        output: InfluxDBv1 (http://localhost:8086)
+
+     scenarios: (100.00%) 1 scenario, 1 max VUs, 10m30s max duration (incl. graceful stop):
+              * default: 1 iterations shared among 1 VUs (maxDuration: 10m0s, gracefulStop: 30s)
+
+time="2026-05-27T18:31:01-03:00" level=info msg="▶ [1/13] GET / — Root endpoint" source=console
+
+running (00m01.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m01.0s/10m0s  0/1 shared iters
+time="2026-05-27T18:31:02-03:00" level=info msg="▶ [2/13] GET /health — Health check" source=console
+time="2026-05-27T18:31:02-03:00" level=info msg="▶ [3/13] GET /communities — Listar comunidades" source=console
+
+running (00m02.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m02.0s/10m0s  0/1 shared iters
+time="2026-05-27T18:31:03-03:00" level=info msg="▶ [4/13] GET /communities?biomeId=... — Filtrar por bioma" source=console
+time="2026-05-27T18:31:04-03:00" level=info msg="▶ [5/13] POST /auth/login — Login com usuário seed" source=console
+
+running (00m03.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m03.0s/10m0s  0/1 shared iters
+time="2026-05-27T18:31:04-03:00" level=error msg="❌ Login falhou — abortando smoke test" source=console
+
+
+  █ THRESHOLDS 
+
+    checks
+    ✗ 'rate>0.99' rate=85.71%
+
+    http_req_duration
+    ✓ 'p(95)<2000' p(95)=116.13ms
+
+    http_req_failed
+    ✗ 'rate<0.01' rate=20.00%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 14     4.542108/s
+    checks_succeeded...: 85.71% 12 out of 14
+    checks_failed......: 14.28% 2 out of 14
+
+    ✓ [root] status 200
+    ✓ [root] mensagem VERACIS
+    ✓ [health] status 200
+    ✓ [health] campo status ok
+    ✓ [health] tempo de resposta < 500ms
+    ✓ [communities] status 200
+    ✓ [communities] tem campo data
+    ✓ [communities] tempo de resposta < 1s
+    ✗ [login] status 200
+      ↳  0% — ✓ 0 / ✗ 1
+    ✗ [login] mfaRequired false
+      ↳  0% — ✓ 0 / ✗ 1
+    ✓ [login] tempo de resposta < 2s
+
+    HTTP
+    http_req_duration..............: avg=101.51ms min=89.22ms med=96.96ms  max=116.42ms p(90)=115.84ms p(95)=116.13ms
+      { expected_response:true }...: avg=104.59ms min=90ms    med=105.96ms max=116.42ms p(90)=115.98ms p(95)=116.2ms 
+    http_req_failed................: 20.00% 1 out of 5
+    http_reqs......................: 5      1.622182/s
+
+    EXECUTION
+    iteration_duration.............: avg=3.08s    min=3.08s   med=3.08s    max=3.08s    p(90)=3.08s    p(95)=3.08s   
+    iterations.....................: 1      0.324436/s
+    vus............................: 1      min=1      max=1
+    vus_max........................: 1      min=1      max=1
+
+    NETWORK
+    data_received..................: 8.0 kB 2.6 kB/s
+    data_sent......................: 2.1 kB 685 B/s
+
+
+
+
+running (00m03.1s), 0/1 VUs, 1 complete and 0 interrupted iterations
+default ✓ [ 100% ] 1 VUs  00m03.1s/10m0s  1/1 shared iters
+time="2026-05-27T18:31:04-03:00" level=error msg="thresholds on metrics 'checks, http_req_failed' have been crossed"

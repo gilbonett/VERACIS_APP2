@@ -1,0 +1,24 @@
+model Attachment {
+  id       String          @id @default(uuid())
+  scope    AttachmentScope
+  path     String
+  fileName String          @map("file_name")
+  fileType String          @map("file_type")
+  fileSize Int             @map("file_size")
+  url      String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  alertId String? @map("alert_id")
+  alert   Alert?  @relation(fields: [alertId], references: [id])
+
+  @@index([scope])
+  @@index([alertId])
+  @@map("attachments")
+}
+
+enum AttachmentScope {
+  USER
+  ALERT
+}

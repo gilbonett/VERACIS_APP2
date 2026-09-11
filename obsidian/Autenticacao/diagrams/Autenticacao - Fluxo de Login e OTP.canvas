@@ -1,0 +1,35 @@
+{
+	"nodes":[
+		{"id":"a0start00000000","type":"text","text":"POST /session/sign-in\n{ cpf, password }","x":-1000,"y":-400,"width":260,"height":90,"color":"3"},
+		{"id":"a1cpfexists0000","type":"text","text":"CPF válido e\nusuário existe?","x":-1000,"y":-240,"width":260,"height":100},
+		{"id":"a2fail000000000","type":"text","text":"401 InvalidCredentialsError","x":-1360,"y":-40,"width":260,"height":80,"color":"1"},
+		{"id":"a3passok0000000","type":"text","text":"Senha bate\n(bcrypt.compare)?","x":-1000,"y":-40,"width":260,"height":100},
+		{"id":"a4otpcheck00000","type":"text","text":"user.otpEnabled?","x":-1000,"y":160,"width":260,"height":90},
+		{"id":"a5nootp0000000","type":"text","text":"Cria Session\ncookie session_token (7d)","x":-1360,"y":340,"width":260,"height":100,"color":"4"},
+		{"id":"a6challenge00000","type":"text","text":"Cria OtpChallenge PENDING_EMAIL\ncookie challenge_token (10min)","x":-640,"y":340,"width":260,"height":100},
+		{"id":"a7sendotp00000","type":"text","text":"POST /session/send-otp-code\ncódigo HMAC gerado, e-mail enviado\nstate → PENDING_CODE","x":-640,"y":500,"width":260,"height":120},
+		{"id":"a8verifyotp0000","type":"text","text":"POST /session/verify-otp-code\n{ code }","x":-640,"y":680,"width":260,"height":90},
+		{"id":"a9otpvalid00000","type":"text","text":"código correto\ne attempts ≤ 5?","x":-640,"y":830,"width":260,"height":100},
+		{"id":"a10otpfail00000","type":"text","text":"⚠️ InvalidOtpCodeError, ou\nna 6ª tentativa: MaxOtpAttemptsError\n(state → EXPIRED)","x":-1000,"y":1000,"width":260,"height":120,"color":"1"},
+		{"id":"a11verified00000","type":"text","text":"state → VERIFIED\nCria Session (7d)","x":-280,"y":1000,"width":260,"height":100,"color":"4"},
+		{"id":"a12done000000000","type":"text","text":"200 — autenticado","x":-820,"y":1180,"width":260,"height":80,"color":"4"},
+		{"id":"a13gap0000000000","type":"text","text":"⚠️ GAP: user.status (DISABLED/BLOCKED)\nnão é verificado em nenhum passo deste fluxo","x":-1360,"y":-240,"width":300,"height":110,"color":"1"}
+	],
+	"edges":[
+		{"id":"b0","fromNode":"a0start00000000","fromSide":"bottom","toNode":"a1cpfexists0000","toSide":"top"},
+		{"id":"b1","fromNode":"a1cpfexists0000","fromSide":"left","toNode":"a2fail000000000","toSide":"top","label":"não"},
+		{"id":"b1b","fromNode":"a1cpfexists0000","fromSide":"left","toNode":"a13gap0000000000","toSide":"bottom","label":"(ver gap)"},
+		{"id":"b2","fromNode":"a1cpfexists0000","fromSide":"bottom","toNode":"a3passok0000000","toSide":"top","label":"sim"},
+		{"id":"b3","fromNode":"a3passok0000000","fromSide":"left","toNode":"a2fail000000000","toSide":"bottom","label":"não"},
+		{"id":"b4","fromNode":"a3passok0000000","fromSide":"bottom","toNode":"a4otpcheck00000","toSide":"top","label":"sim"},
+		{"id":"b5","fromNode":"a4otpcheck00000","fromSide":"left","toNode":"a5nootp0000000","toSide":"top","label":"não"},
+		{"id":"b6","fromNode":"a4otpcheck00000","fromSide":"right","toNode":"a6challenge00000","toSide":"top","label":"sim"},
+		{"id":"b7","fromNode":"a6challenge00000","fromSide":"bottom","toNode":"a7sendotp00000","toSide":"top"},
+		{"id":"b8","fromNode":"a7sendotp00000","fromSide":"bottom","toNode":"a8verifyotp0000","toSide":"top"},
+		{"id":"b9","fromNode":"a8verifyotp0000","fromSide":"bottom","toNode":"a9otpvalid00000","toSide":"top"},
+		{"id":"b10","fromNode":"a9otpvalid00000","fromSide":"left","toNode":"a10otpfail00000","toSide":"top","label":"não"},
+		{"id":"b11","fromNode":"a9otpvalid00000","fromSide":"right","toNode":"a11verified00000","toSide":"top","label":"sim"},
+		{"id":"b12","fromNode":"a5nootp0000000","fromSide":"bottom","toNode":"a12done000000000","toSide":"top"},
+		{"id":"b13","fromNode":"a11verified00000","fromSide":"bottom","toNode":"a12done000000000","toSide":"right"}
+	]
+}

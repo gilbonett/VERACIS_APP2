@@ -1,0 +1,12 @@
+eslint.config.mjs
+.prettierrc.mjs
+.turbo
+.gitignore
+data
+dist
+test
+coverage
+dist
+node_modules
+biome.json
+**.md

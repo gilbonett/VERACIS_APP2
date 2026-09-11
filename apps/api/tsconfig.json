@@ -1,0 +1,18 @@
+{
+  "extends": "@veracis/tsconfig/nest.json",
+  "include": [
+    "src/**/*",
+    "test/**/*",
+    "*.ts",
+    "prisma/**/*",
+    "vitest.config.mts",
+  ],
+  "compilerOptions": {
+    "types": ["vitest/globals", "multer"],
+    "outDir": "./dist",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@generated/*": ["./prisma/generated/*"],
+    },
+  },
+}

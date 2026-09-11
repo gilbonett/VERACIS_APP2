@@ -1,0 +1,23 @@
+{
+	"nodes":[
+		{"id":"p0start0000000p0","type":"text","x":-140,"y":-600,"width":280,"height":100,"text":"**RegisterUserUseCase.execute()**\n\nCPF e e-mail únicos validados","color":"3"},
+		{"id":"p1create0000000p1","type":"text","x":-140,"y":-440,"width":280,"height":130,"text":"`User.create()`\n\nstatus=ACTIVED, isVerified=true,\notpEnabled=true → depois `disableOtp()`","color":"6"},
+		{"id":"p2ev1000000000p2e","type":"text","x":-700,"y":-220,"width":240,"height":90,"text":"Evento:\n**UserRegistered**\n(sempre)","color":"4"},
+		{"id":"p3ev2000000000p3e","type":"text","x":-420,"y":-220,"width":240,"height":90,"text":"Evento:\n**UserTermsAcceptedEvent**\n(sempre)","color":"4"},
+		{"id":"p4ev3000000000p4e","type":"text","x":-140,"y":-220,"width":240,"height":110,"text":"Evento:\n**UserCreatedEvent**\n(somente se role = MEMBER)","color":"2"},
+		{"id":"p5sub1000000000p5","type":"text","x":-700,"y":20,"width":240,"height":120,"text":"**OnUserRegistered**\n\ndispara e-mail de boas-vindas\n(método chamado `sendPasswordResetEmail`, mas envia welcome)"},
+		{"id":"p6sub2000000000p6","type":"text","x":-420,"y":20,"width":240,"height":130,"text":"**OnUserTermsAccepted**\n\ncria `UserTerms` (registro de aceite)\n(método também chamado `sendPasswordResetEmail`, sem envio de e-mail)"},
+		{"id":"p7sub3000000000p7","type":"text","x":-140,"y":20,"width":240,"height":150,"text":"**OnUserCreated**\n(domain/notifications, fora deste subdomínio)\n\nbusca líderes das comunidades e envia notificação \"Novo Membro na Comunidade\""},
+		{"id":"p8note0000000000p8","type":"text","x":180,"y":-220,"width":260,"height":200,"text":"⚠️ Papel ≠ MEMBER (LEADER/MANAGER/ROOT) não dispara `UserCreatedEvent` → sem notificação de novo membro para esse cadastro","color":"1"}
+	],
+	"edges":[
+		{"id":"q1000000000000q1","fromNode":"p0start0000000p0","fromSide":"bottom","toNode":"p1create0000000p1","toSide":"top"},
+		{"id":"q2000000000000q2","fromNode":"p1create0000000p1","fromSide":"bottom","toNode":"p2ev1000000000p2e","toSide":"top"},
+		{"id":"q3000000000000q3","fromNode":"p1create0000000p1","fromSide":"bottom","toNode":"p3ev2000000000p3e","toSide":"top"},
+		{"id":"q4000000000000q4","fromNode":"p1create0000000p1","fromSide":"bottom","toNode":"p4ev3000000000p4e","toSide":"top","label":"se role = MEMBER"},
+		{"id":"q5000000000000q5","fromNode":"p1create0000000p1","fromSide":"right","toNode":"p8note0000000000p8","toSide":"top","color":"1","toEnd":"none"},
+		{"id":"q6000000000000q6","fromNode":"p2ev1000000000p2e","fromSide":"bottom","toNode":"p5sub1000000000p5","toSide":"top"},
+		{"id":"q7000000000000q7","fromNode":"p3ev2000000000p3e","fromSide":"bottom","toNode":"p6sub2000000000p6","toSide":"top"},
+		{"id":"q8000000000000q8","fromNode":"p4ev3000000000p4e","fromSide":"bottom","toNode":"p7sub3000000000p7","toSide":"top"}
+	]
+}

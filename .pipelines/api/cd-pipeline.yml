@@ -1,0 +1,42 @@
+name: "[CD] VERACIS-API"
+trigger: none
+
+resources:
+  pipelines:
+    - pipeline: ci-api
+      source: "[CI] VERACIS-API"
+      trigger:
+        branches:
+          include: [main]
+        stages: [DockerBuildAndPush]
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - template: ../templates/cd-ecs-deploy.yml
+    parameters:
+      stageName: DeployApi
+      stageDisplayName: "🧪 Deploy API"
+      deploymentName: DeployECSApi
+      deploymentDisplayName: "Deploy API → ECS"
+      environmentName: testing
+      ciResourceName: ci-api
+      metadataArtifactName: build-metadata-api
+
+      ecrRepositoryVar: "$(ECR_API_REPOSITORY)"
+      ecsClusterVar: "$(ECS_CLUSTER)"
+      ecsServiceVar: "$(ECS_SERVICE_API)"
+      ecsTaskFamilyVar: "$(ECS_TASK_DEFINITION_FAMILY_API)"
+      ecsContainerVar: "$(ECS_CONTAINER_API)"
+      healthCheckUrlVar: "$(HEALTH_CHECK_API_URL)"
+
+      awsCredentials: "veracis-aws-oidc"
+      awsRegionVar: "$(AWS_REGION)"
+
+      variableGroups:
+        - Veracis-Registry
+        - Veracis-Deploy-Test
+
+      runMigration: true
+      migrationCommand: "cd apps/api && pnpm db:deploy && pnpm db:seed:prod"

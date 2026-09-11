@@ -1,0 +1,8 @@
+{
+  "root": false,
+  "$schema": "https://biomejs.dev/schemas/2.3.4/schema.json",
+  "extends": ["@veracis/biome"],
+  "files": {
+    "includes": ["src/**/*.ts", "tsconfig.json"]
+  }
+}

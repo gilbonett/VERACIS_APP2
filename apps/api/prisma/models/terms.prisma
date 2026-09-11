@@ -1,0 +1,20 @@
+model Terms {
+  id          String      @id @default(uuid())
+  version     DateTime    @default(now())
+  title       String
+  content     String
+  status      TermsStatus @default(DRAFT)
+  publishedAt DateTime?   @map("published_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  users UserTerms[]
+
+  @@map("terms")
+}
+
+enum TermsStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}

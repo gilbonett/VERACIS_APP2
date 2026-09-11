@@ -1,0 +1,15 @@
+model Risk {
+  id          String  @id @default(uuid())
+  name        String
+  slug        String  @unique
+  description String?
+  url         String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  alerts AlertRisk[]
+
+  @@index([slug])
+  @@map("risks")
+}

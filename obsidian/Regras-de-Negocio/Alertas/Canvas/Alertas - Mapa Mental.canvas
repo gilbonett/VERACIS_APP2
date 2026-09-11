@@ -1,0 +1,41 @@
+{
+	"nodes":[
+		{"id":"a1a1a1a1a1a1a1a1","type":"text","text":"# Alertas\n\nDomínio de Negócio — Índice Mestre\n\n[[Alertas]]","x":-150,"y":-70,"width":300,"height":140,"color":"6"},
+		{"id":"b0100000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/01-Ciclo-de-Vida.md","x":-1420,"y":-480,"width":260,"height":320,"color":"1"},
+		{"id":"b0200000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/02-Criacao-de-Alertas.md","x":-990,"y":-480,"width":260,"height":320,"color":"1"},
+		{"id":"b0300000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/03-Confirmacao-Comunitaria.md","x":-560,"y":-480,"width":260,"height":320,"color":"1"},
+		{"id":"b0400000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/04-Visibilidade-Alertas-Saude.md","x":-130,"y":-480,"width":260,"height":320,"color":"6"},
+		{"id":"b0500000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/05-Expiracao-Automatica.md","x":300,"y":-480,"width":260,"height":320,"color":"1"},
+		{"id":"b0600000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/06-Comentarios.md","x":730,"y":-480,"width":260,"height":320,"color":"4"},
+		{"id":"b0700000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/07-Anexos.md","x":1160,"y":-480,"width":260,"height":320,"color":"4"},
+		{"id":"b0800000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/08-Metricas.md","x":-1420,"y":340,"width":260,"height":420,"color":"5"},
+		{"id":"b0900000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/09-Consulta-de-Alertas.md","x":-990,"y":340,"width":260,"height":420,"color":"5"},
+		{"id":"b1000000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/10-Erros-de-Dominio.md","x":-560,"y":340,"width":260,"height":420,"color":"2"},
+		{"id":"b1100000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/11-Eventos-de-Dominio.md","x":-130,"y":340,"width":260,"height":420,"color":"2"},
+		{"id":"b1200000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/12-Contratos-de-Repositorio.md","x":300,"y":340,"width":260,"height":420,"color":"3"},
+		{"id":"b1300000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/13-Observabilidade.md","x":730,"y":340,"width":260,"height":420,"color":"3"},
+		{"id":"b1400000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/14-Glossario.md","x":1160,"y":340,"width":260,"height":420,"color":"3"},
+		{"id":"b1500000000000b0","type":"file","file":"Regras-de-Negocio/Alertas/15-Requisitos.md","x":1590,"y":340,"width":260,"height":420,"color":"6"},
+		{"id":"c1c1c1c1c1c1c1c1","type":"text","text":"**Fluxo Principal**\n\nCiclo de vida, criação, confirmação e expiração do alerta","x":-1720,"y":-480,"width":260,"height":160,"color":"1"},
+		{"id":"c2c2c2c2c2c2c2c2","type":"text","text":"**Leitura e Suporte**\n\nMétricas, consultas, erros, eventos, contratos, observabilidade e glossário","x":-1720,"y":340,"width":260,"height":420,"color":"5"}
+	],
+	"edges":[
+		{"id":"e0100000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"top","toNode":"b0100000000000b0","toSide":"bottom","color":"1"},
+		{"id":"e0200000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"top","toNode":"b0200000000000b0","toSide":"bottom","color":"1"},
+		{"id":"e0300000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"top","toNode":"b0300000000000b0","toSide":"bottom","color":"1"},
+		{"id":"e0400000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"top","toNode":"b0400000000000b0","toSide":"bottom","color":"6"},
+		{"id":"e0500000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"top","toNode":"b0500000000000b0","toSide":"bottom","color":"1"},
+		{"id":"e0600000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"top","toNode":"b0600000000000b0","toSide":"bottom","color":"4"},
+		{"id":"e0700000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"top","toNode":"b0700000000000b0","toSide":"bottom","color":"4"},
+		{"id":"e0800000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"bottom","toNode":"b0800000000000b0","toSide":"top","color":"5"},
+		{"id":"e0900000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"bottom","toNode":"b0900000000000b0","toSide":"top","color":"5"},
+		{"id":"e1000000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"bottom","toNode":"b1000000000000b0","toSide":"top","color":"2"},
+		{"id":"e1100000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"bottom","toNode":"b1100000000000b0","toSide":"top","color":"2"},
+		{"id":"e1200000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"bottom","toNode":"b1200000000000b0","toSide":"top","color":"3"},
+		{"id":"e1300000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"bottom","toNode":"b1300000000000b0","toSide":"top","color":"3"},
+		{"id":"e1400000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"bottom","toNode":"b1400000000000b0","toSide":"top","color":"3"},
+		{"id":"e1500000000000e0","fromNode":"a1a1a1a1a1a1a1a1","fromSide":"bottom","toNode":"b1500000000000b0","toSide":"top","color":"6"},
+		{"id":"e2000000000000e0","fromNode":"c1c1c1c1c1c1c1c1","fromSide":"right","toNode":"b0100000000000b0","toSide":"left","toEnd":"none","color":"1"},
+		{"id":"e2100000000000e0","fromNode":"c2c2c2c2c2c2c2c2","fromSide":"right","toNode":"b0800000000000b0","toSide":"left","toEnd":"none","color":"5"}
+	]
+}

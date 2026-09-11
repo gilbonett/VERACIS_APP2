@@ -1,0 +1,28 @@
+{
+  "nodes": [
+    { "id": "m0aggregate0000m0", "type": "text", "x": -170, "y": -80, "width": 340, "height": 210, "text": "# User\n**Aggregate Root**\n\ncpf, email, name, password, role, status\notpEnabled, isVerified, birthDate\nlastSignInAt, mapTutorialCompletedAt\n\nupdateProfile · updatePassword\nenableOtp/disableOtp · disable/activate\ncompleteMapTutorial · aggreateCommunities", "color": "6" },
+
+    { "id": "m1membership00m1m", "type": "text", "x": -700, "y": -60, "width": 260, "height": 130, "text": "**Membership**\n(UserMembershipList)\n\nuserId ↔ communityId\ncommunityName / biomeName (leitura)" },
+
+    { "id": "m2terms0000000m2t", "type": "text", "x": 320, "y": -300, "width": 280, "height": 170, "text": "**Terms**\n(entidade independente)\n\nversion, title, content, status\nDRAFT → PUBLISHED → ARCHIVED\n\n⚠️ sem repositório/caso de uso" },
+
+    { "id": "m3userterms000m3u", "type": "text", "x": 320, "y": -60, "width": 280, "height": 150, "text": "**UserTerms**\n(entidade de auditoria)\n\nuserId, termsId, acceptedAt,\nipAddress, userAgent" },
+
+    { "id": "m4repouser0000m4r", "type": "text", "x": -170, "y": 220, "width": 340, "height": 110, "text": "**UserRepository**\ncontrato de escrita\n\ncreate · save · findByCpf · findByEmail\nupdatePassword · invalidateProfileCache", "color": "3" },
+
+    { "id": "m5repomember00m5r", "type": "text", "x": -700, "y": 220, "width": 260, "height": 130, "text": "**MembershipRepository**\n\nfindManyByCommunityId(sAndLeader)\nfindCountByCommunityId\ncreateMany · removeMany", "color": "3" },
+
+    { "id": "m6repoterms000m6r", "type": "text", "x": 320, "y": 220, "width": 280, "height": 110, "text": "**UserTermsRepository**\n\ncreate (único método)", "color": "3" },
+
+    { "id": "m7group00000000m7", "type": "group", "x": -780, "y": -420, "width": 320, "height": 800, "label": "Vínculo com comunidades", "color": "6" },
+    { "id": "m8group00000000m8", "type": "group", "x": 300, "y": -420, "width": 320, "height": 800, "label": "Termos de uso", "color": "6" }
+  ],
+  "edges": [
+    { "id": "n1000000000000n1", "fromNode": "m0aggregate0000m0", "fromSide": "left", "toNode": "m1membership00m1m", "toSide": "right", "label": "possui" },
+    { "id": "n2000000000000n2", "fromNode": "m0aggregate0000m0", "fromSide": "right", "toNode": "m3userterms000m3u", "toSide": "left", "label": "referenciado por userId", "toEnd": "none" },
+    { "id": "n3000000000000n3", "fromNode": "m3userterms000m3u", "fromSide": "top", "toNode": "m2terms0000000m2t", "toSide": "bottom", "label": "aceita a versão de", "toEnd": "none" },
+    { "id": "n4000000000000n4", "fromNode": "m0aggregate0000m0", "fromSide": "bottom", "toNode": "m4repouser0000m4r", "toSide": "top", "label": "persistido via", "color": "3" },
+    { "id": "n5000000000000n5", "fromNode": "m1membership00m1m", "fromSide": "bottom", "toNode": "m5repomember00m5r", "toSide": "top", "label": "persistido via", "color": "3" },
+    { "id": "n6000000000000n6", "fromNode": "m3userterms000m3u", "fromSide": "bottom", "toNode": "m6repoterms000m6r", "toSide": "top", "label": "persistido via", "color": "3" }
+  ]
+}

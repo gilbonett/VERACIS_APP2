@@ -1,0 +1,30 @@
+model Account {
+  id String @id @default(uuid())
+
+  accountId  String @map("account_id")
+  providerId String @map("provider_id")
+  userId     String @map("user_id")
+  user       User   @relation(fields: [userId], references: [id])
+
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+
+  passwordHash         String?   @map("password_hash")
+  failedAttempts       Int?      @map("failed_attempts")
+  lockedUntil          DateTime? @map("locked_until")
+  lastPasswordChangeAt DateTime? @map("last_password_change_at")
+
+  rawAssuranceClaim String?   @map("raw_assurance_claim")
+  linkedAt          DateTime? @map("linked_at")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@unique([providerId, accountId])
+  @@unique([userId, providerId])
+  @@map("accounts")
+}

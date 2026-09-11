@@ -1,0 +1,31 @@
+server:
+  http_listen_port: 4040
+
+storage:
+  backend: s3
+  s3:
+    bucket_name: ${PYROSCOPE_S3_BUCKET}
+    region: ${AWS_REGION}
+    endpoint: s3.${AWS_REGION}.amazonaws.com
+
+pyroscopedb:
+  data_path: /tmp/pyroscope/data
+
+self_profiling:
+  disable_push: true
+
+memberlist:
+  join_members: []
+
+ingester:
+  lifecycler:
+    ring:
+      kvstore:
+        store: memberlist
+      replication_factor: 1
+
+compactor: {}
+
+store_gateway:
+  sharding_ring:
+    replication_factor: 1

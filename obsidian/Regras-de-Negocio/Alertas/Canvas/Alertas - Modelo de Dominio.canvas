@@ -1,0 +1,25 @@
+{
+	"nodes":[
+		{"id":"d0aggregate0000d0","type":"text","x":-160,"y":-60,"width":320,"height":170,"text":"# Alert\n**Aggregate Root**\n\nstatus, lat/lng, description,\ncategoryId, authorId, communityId\n\ndoAccept · doReject · doClose\ndoAssociateEvents/Risks/Attachments","color":"6"},
+		{"id":"d1event000000d1e","type":"text","x":-700,"y":-330,"width":240,"height":100,"text":"**AlertEvent**\n(AlertEventList)\n\neventId ↔ alertId"},
+		{"id":"d2risk0000000d2r","type":"text","x":-700,"y":-180,"width":240,"height":100,"text":"**AlertRisk**\n(AlertRiskList)\n\nriskId ↔ alertId"},
+		{"id":"d3attach0000d3at","type":"text","x":-700,"y":330,"width":240,"height":100,"text":"**AlertAttachment**\n(AlertAttachmentList)\n\nattachmentId ↔ alertId"},
+		{"id":"d4comment0000d4c","type":"text","x":260,"y":-330,"width":260,"height":120,"text":"**AlertComment**\n(entidade própria, fora do aggregate)\n\ncontent, authorId, alertId"},
+		{"id":"d5reaction0000d5","type":"text","x":260,"y":-140,"width":260,"height":120,"text":"**AlertReaction**\n(aggregate root próprio)\n\ntype LIKE/DISLIKE, authorId, alertId"},
+		{"id":"d6metrics0000d6m","type":"text","x":260,"y":60,"width":260,"height":120,"text":"**AlertMetrics**\n(entidade de leitura)\n\nstatus[], categories[], events[]"},
+		{"id":"d7details0000d7d","type":"text","x":260,"y":260,"width":260,"height":150,"text":"**AlertDetails**\n(ValueObject — read model)\n\ndesnormalizado: autor, comunidade,\nreactions, comments, events, attachments"},
+		{"id":"d8repowrite000d8","type":"text","x":-160,"y":400,"width":320,"height":100,"text":"**AlertRepository**\ncontrato de escrita\n\ncreate · save · findById · updateStatus","color":"3"},
+		{"id":"d9group00000000d9","type":"group","x":-760,"y":-400,"width":340,"height":900,"label":"Entidades filhas do aggregate","color":"5"},
+		{"id":"d10group00000d10","type":"group","x":220,"y":-400,"width":340,"height":850,"label":"Entidades e read models relacionados (fora do aggregate)","color":"4"}
+	],
+	"edges":[
+		{"id":"de1000000000000e1","fromNode":"d0aggregate0000d0","fromSide":"left","toNode":"d1event000000d1e","toSide":"right","label":"possui"},
+		{"id":"de2000000000000e2","fromNode":"d0aggregate0000d0","fromSide":"left","toNode":"d2risk0000000d2r","toSide":"right","label":"possui"},
+		{"id":"de3000000000000e3","fromNode":"d0aggregate0000d0","fromSide":"left","toNode":"d3attach0000d3at","toSide":"right","label":"possui"},
+		{"id":"de4000000000000e4","fromNode":"d0aggregate0000d0","fromSide":"right","toNode":"d4comment0000d4c","toSide":"left","label":"referenciado por alertId","toEnd":"none"},
+		{"id":"de5000000000000e5","fromNode":"d0aggregate0000d0","fromSide":"right","toNode":"d5reaction0000d5","toSide":"left","label":"referenciado por alertId","toEnd":"none"},
+		{"id":"de6000000000000e6","fromNode":"d0aggregate0000d0","fromSide":"right","toNode":"d6metrics0000d6m","toSide":"left","label":"agregado por communityId","toEnd":"none"},
+		{"id":"de7000000000000e7","fromNode":"d0aggregate0000d0","fromSide":"right","toNode":"d7details0000d7d","toSide":"left","label":"projetado para leitura","toEnd":"none"},
+		{"id":"de8000000000000e8","fromNode":"d0aggregate0000d0","fromSide":"bottom","toNode":"d8repowrite000d8","toSide":"top","label":"persistido via","color":"3"}
+	]
+}

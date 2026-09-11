@@ -1,0 +1,15 @@
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB-K6
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    database: k6
+    # InfluxDB v1.x usa InfluxQL (não Flux)
+    # autenticação desativada no docker-compose (HTTP_AUTH_ENABLED=false)
+    isDefault: true
+    editable: true
+    jsonData:
+      httpMode: GET
+      keepCookies: []

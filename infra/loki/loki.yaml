@@ -1,0 +1,43 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+
+common:
+  ring:
+    kvstore:
+      store: memberlist
+    instance_addr: 0.0.0.0
+  replication_factor: 1
+  path_prefix: /tmp/loki
+
+schema_config:
+  configs:
+    - from: "2024-01-01"
+      store: tsdb
+      object_store: s3
+      schema: v13
+      index:
+        prefix: loki_index_
+        period: 24h
+
+storage_config:
+  aws:
+    region: ${AWS_REGION}
+    bucketnames: ${LOKI_S3_BUCKET}
+    s3forcepathstyle: false
+    endpoint: s3.${AWS_REGION}.amazonaws.com
+    disable_dualstack: true
+
+compactor:
+  working_directory: /tmp/loki/compactor
+  retention_enabled: true
+  delete_request_store: s3
+
+limits_config:
+  # Sem isso antes = log nunca é apagado, custo S3 cresce pra sempre.
+  # 30 dias — ajuste conforme sua política de retenção/custo/LGPD.
+  retention_period: 744h
+  ingestion_rate_mb: 16
+  ingestion_burst_size_mb: 32
+  max_streams_per_user: 10000

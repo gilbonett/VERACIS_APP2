@@ -1,0 +1,65 @@
+model TwoFactor {
+  id          String          @id @default(uuid())
+  type        TwoFactorType
+  status      TwoFactorStatus
+  displayName String?         @map("display_name")
+  enrolledAt  DateTime?       @map("enrolled_at")
+  verifiedAt  DateTime?       @map("verified_at")
+  lastUsedAt  DateTime?       @map("last_used_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  twoFactorChallenges TwoFactorChallenge[]
+
+  @@unique([userId, type])
+  @@index([userId, status])
+  @@map("two_factors")
+}
+
+model TwoFactorChallenge {
+  id         String                   @id @default(uuid())
+  status     TwoFactorChallengeStatus
+  ipAddress  String?                  @map("ip_address")
+  userAgent  String?                  @map("user_agent")
+  deviceName String?                  @map("device_name")
+  expiresAt  DateTime                 @default(now()) @map("expires_at")
+  verifiedAt DateTime?                @map("verified_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  twoFactorId String    @map("two_factor_id")
+  twoFactor   TwoFactor @relation(fields: [twoFactorId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([userId, twoFactorId])
+  @@index([status, expiresAt])
+  @@map("two_factor_challenges")
+}
+
+enum TwoFactorType {
+  EMAIL
+  SMS
+  TOTP
+}
+
+enum TwoFactorStatus {
+  PENDING
+  ENABLED
+  DISABLED
+  REVOKED
+}
+
+enum TwoFactorChallengeStatus {
+  PENDING
+  VERIFIED
+  EXPIRED
+  FAILED
+  CANCELLED
+}

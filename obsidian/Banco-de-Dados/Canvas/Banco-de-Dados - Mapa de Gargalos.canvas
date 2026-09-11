@@ -1,0 +1,42 @@
+{
+	"nodes":[
+		{"id":"f0flowalerts0000","type":"text","text":"**Fluxo: GET /alerts**\n\nFeed principal (alto tráfego)","x":-1120,"y":-460,"width":260,"height":90,"color":"3"},
+		{"id":"f1queryalerts0000","type":"text","text":"AlertDetailsRepository.findMany\n\nWHERE status IN(...) [AND community_id=?]\ninclude: author, community, comments+author, reactions, events→event→category, attachments","x":-1120,"y":-300,"width":260,"height":170},
+		{"id":"f2gargaloalerts00","type":"text","text":"⚠️ Seq Scan (alerts sem índice)\n⚠️ Sem paginação (busca tudo)\n⚠️ include traz password/cpf/email do autor sem uso","x":-1120,"y":0,"width":260,"height":140,"color":"1"},
+		{"id":"f3fixalerts000000","type":"text","text":"✅ CREATE INDEX alerts(status), alerts(community_id,status)\n✅ Paginação por cursor (orderBy createdAt desc)\n✅ select mínimo no include do author","x":-1120,"y":200,"width":260,"height":150,"color":"4"},
+		{"id":"g0flowmetrics0000","type":"text","text":"**Fluxo: GET /alerts/metrics**\n\nDashboard por comunidade","x":-760,"y":-460,"width":260,"height":90,"color":"3"},
+		{"id":"g1querymetrics000","type":"text","text":"AlertMetricsRepository.findByCommunityId\n\n3 queries paralelas: groupBy(status) + category.findMany+_count + event.findMany+_count","x":-760,"y":-300,"width":260,"height":170},
+		{"id":"g2gargalometrics0","type":"text","text":"⚠️ community_id sem índice em alerts\n⚠️ _count correlacionado = 1 subquery por categoria/evento (N+1 de agregação)","x":-760,"y":0,"width":260,"height":140,"color":"1"},
+		{"id":"g3fixmetrics000000","type":"text","text":"✅ CREATE INDEX alerts(community_id,status)\n✅ Trocar findMany+_count por groupBy(categoryId)/groupBy(eventId)","x":-760,"y":200,"width":260,"height":150,"color":"4"},
+		{"id":"h0flowmembers0000","type":"text","text":"**Fluxo: listagem de membros**\n\nMembershipRepository.findManyByCommunityId","x":-400,"y":-460,"width":260,"height":90,"color":"3"},
+		{"id":"h1querymembers000","type":"text","text":"findMany WHERE community_id = ?\n\nPK composta é (user_id, community_id) — community_id não é a coluna mais à esquerda","x":-400,"y":-300,"width":260,"height":150},
+		{"id":"h2gargalomembers0","type":"text","text":"⚠️ PK composta não serve para filtro só por community_id → Seq Scan","x":-400,"y":0,"width":260,"height":110,"color":"1"},
+		{"id":"h3fixmembers00000","type":"text","text":"✅ CREATE INDEX memberships(community_id)","x":-400,"y":200,"width":260,"height":90,"color":"4"},
+		{"id":"i0flowslug00000000","type":"text","text":"**Referência: biomes/communities/events/risks**\n\nfindAll / findBySlug","x":-40,"y":-460,"width":260,"height":90,"color":"3"},
+		{"id":"i1queryslug0000000","type":"text","text":"@unique(slug) + @@index([slug]) → 2 índices na mesma coluna, 4 tabelas","x":-40,"y":-300,"width":260,"height":130},
+		{"id":"i2gargaloslug00000","type":"text","text":"⚠️ Índice redundante — custo de escrita sem ganho de leitura\n⚠️ users_email_cpf_phone_idx: mesmo problema + phone nunca é leftmost","x":-40,"y":0,"width":260,"height":140,"color":"1"},
+		{"id":"i3fixslug000000000","type":"text","text":"✅ DROP INDEX dos 4 slug_idx duplicados\n✅ DROP INDEX users_email_cpf_phone_idx","x":-40,"y":200,"width":260,"height":110,"color":"4"},
+		{"id":"j0flowcommunities0","type":"text","text":"**Fluxo: GET /communities**\n\nfindManyWithQueries(biomeId)","x":320,"y":-460,"width":260,"height":90,"color":"3"},
+		{"id":"j1querycommunities","type":"text","text":"findMany WHERE biome_id = ? (opcional), sem paginação, orderBy name","x":320,"y":-300,"width":260,"height":130},
+		{"id":"j2gargalocommunit0","type":"text","text":"⚠️ biome_id sem índice\n⚠️ sem paginação (hipótese: baixo risco hoje, catálogo pequeno)","x":320,"y":0,"width":260,"height":130,"color":"2"},
+		{"id":"j3fixcommunities00","type":"text","text":"✅ CREATE INDEX communities(biome_id)\n✅ Avaliar cache Redis (dado muda pouco)","x":320,"y":200,"width":260,"height":110,"color":"4"},
+		{"id":"z0legend000000000","type":"text","text":"🔵 Fluxo/Endpoint  ·  ⚪ Query  ·  🔴 Gargalo  ·  🟢 Otimização recomendada","x":-1120,"y":420,"width":1700,"height":60,"color":"5"}
+	],
+	"edges":[
+		{"id":"e0","fromNode":"f0flowalerts0000","fromSide":"bottom","toNode":"f1queryalerts0000","toSide":"top"},
+		{"id":"e1","fromNode":"f1queryalerts0000","fromSide":"bottom","toNode":"f2gargaloalerts00","toSide":"top"},
+		{"id":"e2","fromNode":"f2gargaloalerts00","fromSide":"bottom","toNode":"f3fixalerts000000","toSide":"top"},
+		{"id":"e3","fromNode":"g0flowmetrics0000","fromSide":"bottom","toNode":"g1querymetrics000","toSide":"top"},
+		{"id":"e4","fromNode":"g1querymetrics000","fromSide":"bottom","toNode":"g2gargalometrics0","toSide":"top"},
+		{"id":"e5","fromNode":"g2gargalometrics0","fromSide":"bottom","toNode":"g3fixmetrics000000","toSide":"top"},
+		{"id":"e6","fromNode":"h0flowmembers0000","fromSide":"bottom","toNode":"h1querymembers000","toSide":"top"},
+		{"id":"e7","fromNode":"h1querymembers000","fromSide":"bottom","toNode":"h2gargalomembers0","toSide":"top"},
+		{"id":"e8","fromNode":"h2gargalomembers0","fromSide":"bottom","toNode":"h3fixmembers00000","toSide":"top"},
+		{"id":"e9","fromNode":"i0flowslug00000000","fromSide":"bottom","toNode":"i1queryslug0000000","toSide":"top"},
+		{"id":"e10","fromNode":"i1queryslug0000000","fromSide":"bottom","toNode":"i2gargaloslug00000","toSide":"top"},
+		{"id":"e11","fromNode":"i2gargaloslug00000","fromSide":"bottom","toNode":"i3fixslug000000000","toSide":"top"},
+		{"id":"e12","fromNode":"j0flowcommunities0","fromSide":"bottom","toNode":"j1querycommunities","toSide":"top"},
+		{"id":"e13","fromNode":"j1querycommunities","fromSide":"bottom","toNode":"j2gargalocommunit0","toSide":"top"},
+		{"id":"e14","fromNode":"j2gargalocommunit0","fromSide":"bottom","toNode":"j3fixcommunities00","toSide":"top"}
+	]
+}

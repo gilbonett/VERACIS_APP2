@@ -1,0 +1,19 @@
+{
+	"nodes":[
+		{"id":"s5gap00000000s5g","type":"text","text":"🚨 **Lacuna**\n\nAceite via reação comunitária NÃO emite `AlertAcceptedEvent` → expiração de 30 min nunca é agendada nesse caminho.\n\nVer [[05-Expiracao-Automatica]]","x":260,"y":-740,"width":320,"height":255,"color":"1"},
+		{"id":"s0start0000000s0","type":"text","text":"**Início**\n\nAlert.create()","x":-260,"y":-635,"width":160,"height":70,"color":"3"},
+		{"id":"s3closed00000s3c","type":"text","text":"## CLOSED\n\nEncerrado por expiração automática ou fechamento manual.\n\nEstado terminal.","x":-320,"y":40,"width":280,"height":130,"color":"1"},
+		{"id":"s2accepted000s2a","type":"text","text":"## ACCEPTED\n\nConfirmado pela comunidade OU criado por `LEADER`/`MANAGER`/`ROOT`.\n\nTTL: **30 min** (apenas se nasceu ACCEPTED — ver lacuna)","x":140,"y":-300,"width":280,"height":150,"color":"4"},
+		{"id":"s1pending0000s1p","type":"text","text":"## PENDING\n\nCriado por `MEMBER`.\nAguarda confirmação comunitária.\n\nTTL: **45 min**","x":-1000,"y":-300,"width":280,"height":150,"color":"2"},
+		{"id":"s4rejected00s4rej","type":"text","text":"## REJECTED\n\n⚠️ Estado sem fluxo de disparo.\n`doReject()` existe mas nenhum caso de uso o chama.\n\nVer [[01-Ciclo-de-Vida]]","x":1000,"y":-300,"width":280,"height":150,"color":"6"}
+	],
+	"edges":[
+		{"id":"es1000000000000e1","fromNode":"s0start0000000s0","fromSide":"bottom","toNode":"s1pending0000s1p","toSide":"top","label":"MEMBER cria alerta"},
+		{"id":"es2000000000000e2","fromNode":"s0start0000000s0","fromSide":"bottom","toNode":"s2accepted000s2a","toSide":"top","label":"LEADER/MANAGER/ROOT cria alerta"},
+		{"id":"es3000000000000e3","fromNode":"s1pending0000s1p","fromSide":"right","toNode":"s2accepted000s2a","toSide":"left","color":"4","label":"5 LIKE, usuário coringa, ou reação de não-membro"},
+		{"id":"es4000000000000e4","fromNode":"s1pending0000s1p","fromSide":"bottom","toNode":"s3closed00000s3c","toSide":"left","color":"2","label":"45 min sem confirmação"},
+		{"id":"es5000000000000e5","fromNode":"s2accepted000s2a","fromSide":"bottom","toNode":"s3closed00000s3c","toSide":"right","color":"1","label":"30 min após aceite (só se nasceu ACCEPTED)"},
+		{"id":"es6000000000000e6","fromNode":"s2accepted000s2a","fromSide":"right","toNode":"s4rejected00s4rej","toSide":"left","toEnd":"none","color":"6","label":"sem fluxo — não ocorre hoje"},
+		{"id":"es7000000000000e7","fromNode":"s5gap00000000s5g","fromSide":"bottom","toNode":"s2accepted000s2a","toSide":"top","toEnd":"none","color":"1"}
+	]
+}

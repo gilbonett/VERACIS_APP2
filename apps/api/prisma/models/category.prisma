@@ -1,0 +1,14 @@
+model Category {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  icon        String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  events Event[]
+  alerts Alert[]
+
+  @@map("categories")
+}

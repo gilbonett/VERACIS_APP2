@@ -1,0 +1,24 @@
+model Outbox {
+  id          String       @id @default(uuid())
+  eventName   String       @map("event_name")
+  ocurredAt   DateTime     @map("ocurred_at")
+  aggregateId String       @map("aggregate_id")
+  payload     Json
+  status      OutboxStatus @default(PENDING)
+  attempts    Int          @default(0)
+  error       String?
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+  processedAt DateTime? @map("processed_at")
+
+  @@index([eventName])
+  @@index([status, createdAt])
+  @@index([aggregateId])
+  @@map("outbox")
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}

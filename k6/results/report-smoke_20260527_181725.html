@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K6 Performance Report — smoke_20260527_181725</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Inter', 'Segoe UI', sans-serif;
+    background: #111217;
+    color: #d4d4d8;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #1a1d27 0%, #1f2236 100%);
+    border-bottom: 2px solid #F7801A;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-left h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.3px;
+  }
+  .header-left .subtitle {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 4px;
+    font-family: monospace;
+  }
+  .badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .badge-pass { background: rgba(115,191,105,0.15); color: #73BF69; border: 1px solid #73BF69; }
+  .badge-fail { background: rgba(242,73,92,0.15);  color: #F2495C; border: 1px solid #F2495C; }
+
+  /* ── Section ── */
+  .section { padding: 20px 32px; }
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #2d3039;
+  }
+
+  /* ── Stat Cards ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+  }
+  .stat-card {
+    background: #1f2128;
+    border: 1px solid #2d3039;
+    border-radius: 8px;
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent, #5794F2);
+  }
+  .stat-label {
+    font-size: 11px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent, #fff);
+    line-height: 1;
+    letter-spacing: -0.5px;
+  }
+  .stat-sub {
+    font-size: 11px;
+    color: #4b5563;
+    margin-top: 6px;
+  }
+
+  /* ── Charts Grid ── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .chart-card {
+    background: #1f2128;
+    border: 1px solid #2d3039;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .chart-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #9ca3af;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+  }
+  .chart-card canvas { max-height: 200px; }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  thead th {
+    background: #16181f;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #2d3039;
+  }
+  tbody tr:nth-child(even) { background: #1a1d27; }
+  tbody tr:hover { background: #242736; }
+  tbody td {
+    padding: 7px 12px;
+    border-bottom: 1px solid #1e2130;
+    color: #c9cfd7;
+  }
+  .table-wrapper {
+    background: #1f2128;
+    border: 1px solid #2d3039;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ── K6 Log ── */
+  .log-wrapper {
+    background: #0d0f14;
+    border: 1px solid #2d3039;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .log-header {
+    background: #16181f;
+    border-bottom: 1px solid #2d3039;
+    padding: 8px 16px;
+    font-size: 11px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  pre.log-content {
+    padding: 16px;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Menlo', monospace;
+    font-size: 11.5px;
+    line-height: 1.65;
+    color: #c9cfd7;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow: auto;
+    max-height: none;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    padding: 16px 32px;
+    border-top: 1px solid #1e2130;
+    display: flex;
+    justify-content: space-between;
+    color: #374151;
+    font-size: 11px;
+  }
+
+  /* ── Print / PDF ── */
+  @media print {
+    body { background: #111217 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .charts-grid { page-break-inside: avoid; }
+    .log-wrapper { page-break-before: always; }
+    pre.log-content { max-height: none !important; overflow: visible !important; }
+  }
+
+  /* ── Divider ── */
+  .divider { height: 1px; background: #1e2130; margin: 0 32px; }
+</style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<div class="header">
+  <div class="header-left">
+    <h1>🔥 VERACIS API — K6 Performance Report</h1>
+    <div class="subtitle">
+      Test Run: smoke_20260527_181725 &nbsp;|&nbsp; Gerado em: 27/05/2026, 18:18:39
+    </div>
+  </div>
+  <span class="badge badge-fail">
+    ✗ FALHOU
+  </span>
+</div>
+
+<!-- ── Summary Stats ──────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">📊 Resumo da Execução</div>
+  <div class="stats-grid">
+    <div class="stat-card" style="--accent: #F2495C">
+      <div class="stat-label">Taxa de Erro</div>
+      <div class="stat-value">7.1%</div>
+      <div class="stat-sub">meta: &lt; 1%</div>
+    </div>
+    <div class="stat-card" style="--accent: #73BF69">
+      <div class="stat-label">p95 Latência</div>
+      <div class="stat-value">102 ms</div>
+      <div class="stat-sub">meta: &lt; 800ms</div>
+    </div>
+    <div class="stat-card" style="--accent: #5794F2">
+      <div class="stat-label">p50 Mediana</div>
+      <div class="stat-value">13 ms</div>
+      <div class="stat-sub">p99: 109 ms</div>
+    </div>
+    <div class="stat-card" style="--accent: #B877D9">
+      <div class="stat-label">VUs Máximo</div>
+      <div class="stat-value">1</div>
+      <div class="stat-sub">usuários simultâneos</div>
+    </div>
+    <div class="stat-card" style="--accent: #5794F2">
+      <div class="stat-label">Throughput</div>
+      <div class="stat-value">0.0 req/s</div>
+      <div class="stat-sub">total: 14 reqs</div>
+    </div>
+    <div class="stat-card" style="--accent: #F2495C">
+      <div class="stat-label">Checks OK</div>
+      <div class="stat-value">0%</div>
+      <div class="stat-sub">0 ✓ / 0 ✗</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Charts ─────────────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">⏱️ Gráficos de Performance</div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Latência — p50 / p90 / p95 / p99</div>
+      <canvas id="chartLatency"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">VUs Ativos</div>
+      <canvas id="chartVus"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Throughput — Requisições por Segundo</div>
+      <canvas id="chartReqs"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Taxa de Erros HTTP (%)</div>
+      <canvas id="chartErrors"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Endpoint Table ─────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">🔍 Performance por Endpoint</div>
+  
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Endpoint</th>
+          <th>p50</th>
+          <th>p95</th>
+          <th>p99</th>
+          <th>Máx</th>
+          <th>Reqs</th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td style="font-family:monospace;font-size:12px">auth_login</td>
+        <td>109 ms</td>
+        <td style="color:#73BF69;font-weight:bold">109 ms</td>
+        <td>109 ms</td>
+        <td>109 ms</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td style="font-family:monospace;font-size:12px">alerts</td>
+        <td>55 ms</td>
+        <td style="color:#73BF69;font-weight:bold">102 ms</td>
+        <td>102 ms</td>
+        <td>102 ms</td>
+        <td>2</td>
+      </tr>
+      <tr>
+        <td style="font-family:monospace;font-size:12px">communities</td>
+        <td>57 ms</td>
+        <td style="color:#73BF69;font-weight:bold">57 ms</td>
+        <td>57 ms</td>
+        <td>57 ms</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td style="font-family:monospace;font-size:12px">alerts_8bf1cb24_35a6_45e2_89f1_31fa79883a42</td>
+        <td>31 ms</td>
+        <td style="color:#73BF69;font-weight:bold">31 ms</td>
+        <td>31 ms</td>
+        <td>31 ms</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td style="font-family:monospace;font-size:12px">user_profile</td>
+        <td>24 ms</td>
+        <td style="color:#73BF69;font-weight:bold">24 ms</td>
+        <td>24 ms</td>
+        <td>24 ms</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td style="font-family:monospace;font-size:12px">auth_refresh</td>
+        <td>17 ms</td>
+        <td style="color:#73BF69;font-weight:bold">17 ms</td>
+        <td>17 ms</td>
+        <td>17 ms</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td style="font-family:monospace;font-size:12px">events_category_b1b2c3d4_0001_4000_8000_0000000000</td>
+        <td>13 ms</td>
+        <td style="color:#73BF69;font-weight:bold">13 ms</td>
+        <td>13 ms</td>
+        <td>13 ms</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td style="font-family:monospace;font-size:12px">categories</td>
+        <td>11 ms</td>
+        <td style="color:#73BF69;font-weight:bold">11 ms</td>
+        <td>11 ms</td>
+        <td>11 ms</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td style="font-family:monospace;font-size:12px">communities_by_biome</td>
+        <td>9 ms</td>
+        <td style="color:#73BF69;font-weight:bold">9 ms</td>
+        <td>9 ms</td>
+        <td>9 ms</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td style="font-family:monospace;font-size:12px">events</td>
+        <td>6 ms</td>
+        <td style="color:#73BF69;font-weight:bold">6 ms</td>
+        <td>6 ms</td>
+        <td>6 ms</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td style="font-family:monospace;font-size:12px">biomes</td>
+        <td>2 ms</td>
+        <td style="color:#73BF69;font-weight:bold">2 ms</td>
+        <td>2 ms</td>
+        <td>2 ms</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td style="font-family:monospace;font-size:12px">health</td>
+        <td>2 ms</td>
+        <td style="color:#73BF69;font-weight:bold">2 ms</td>
+        <td>2 ms</td>
+        <td>2 ms</td>
+        <td>1</td>
+      </tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Checks Table ───────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">☑️ Checks</div>
+  <p style="color:#4b5563;font-style:italic;padding:8px 0">Nenhum check registrado</p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── K6 Log ─────────────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">📋 Output K6</div>
+  <div class="log-wrapper">
+    <div class="log-header">
+      <span>●</span> Terminal output — smoke_20260527_181725
+    </div>
+    <pre class="log-content">
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: k6/scenarios/smoke/smoke.test.js
+        output: InfluxDBv1 (http://localhost:8086)
+
+     scenarios: (100.00%) 1 scenario, 1 max VUs, 10m30s max duration (incl. graceful stop):
+              * default: 1 iterations shared among 1 VUs (maxDuration: 10m0s, gracefulStop: 30s)
+
+time="2026-05-27T18:17:25-03:00" level=info msg="▶ [1/13] GET / — Root endpoint" source=console
+time="2026-05-27T18:17:26-03:00" level=info msg="▶ [2/13] GET /health — Health check" source=console
+
+running (00m01.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m01.0s/10m0s  0/1 shared iters
+time="2026-05-27T18:17:26-03:00" level=info msg="▶ [3/13] GET /communities — Listar comunidades" source=console
+time="2026-05-27T18:17:27-03:00" level=info msg="▶ [4/13] GET /communities?biomeId=... — Filtrar por bioma" source=console
+
+running (00m02.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m02.0s/10m0s  0/1 shared iters
+time="2026-05-27T18:17:27-03:00" level=info msg="▶ [5/13] POST /auth/login — Login com usuário seed" source=console
+time="2026-05-27T18:17:28-03:00" level=info msg="▶ [6/13] GET /user/profile — Perfil do usuário" source=console
+
+running (00m03.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m03.0s/10m0s  0/1 shared iters
+time="2026-05-27T18:17:28-03:00" level=info msg="▶ [7/13] GET /biomes — Listar biomas" source=console
+time="2026-05-27T18:17:29-03:00" level=info msg="▶ [8/13] GET /categories — Listar categorias" source=console
+
+running (00m04.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m04.0s/10m0s  0/1 shared iters
+time="2026-05-27T18:17:29-03:00" level=info msg="▶ [9/13] GET /events — Listar eventos" source=console
+time="2026-05-27T18:17:30-03:00" level=info msg="▶ [10/13] GET /events/category/:categoryId — Eventos por categoria" source=console
+
+running (00m05.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m05.0s/10m0s  0/1 shared iters
+time="2026-05-27T18:17:30-03:00" level=info msg="▶ [11/13] GET /alerts — Listar alertas" source=console
+time="2026-05-27T18:17:31-03:00" level=info msg="▶ [12/13] GET /alerts/:alertId — Detalhe do alerta" source=console
+
+running (00m06.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m06.0s/10m0s  0/1 shared iters
+time="2026-05-27T18:17:32-03:00" level=info msg="▶ [13/13] POST /alerts — Criar alerta" source=console
+time="2026-05-27T18:17:32-03:00" level=info msg="▶ POST /auth/refresh — Renovar token" source=console
+
+running (00m07.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   0% ] 1 VUs  00m07.0s/10m0s  0/1 shared iters
+time="2026-05-27T18:17:32-03:00" level=info msg="✅ Smoke test concluído!" source=console
+
+
+  █ THRESHOLDS 
+
+    checks
+    <span style="color:#F2495C">✗</span> 'rate&gt;0.99' rate=97.14%
+
+    http_req_duration
+    <span style="color:#73BF69">✓</span> 'p(95)&lt;2000' p(95)=104.41ms
+
+    http_req_failed
+    <span style="color:#F2495C">✗</span> 'rate&lt;0.01' rate=7.14%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 35     4.999669/s
+    checks_succeeded...: 97.14% 34 out of 35
+    checks_failed......: 2.85%  1 out of 35
+
+    <span style="color:#73BF69">✓</span> [root] status 200
+    <span style="color:#73BF69">✓</span> [root] mensagem VERACIS
+    <span style="color:#73BF69">✓</span> [health] status 200
+    <span style="color:#73BF69">✓</span> [health] campo status ok
+    <span style="color:#73BF69">✓</span> [health] tempo de resposta &lt; 500ms
+    <span style="color:#73BF69">✓</span> [communities] status 200
+    <span style="color:#73BF69">✓</span> [communities] tem campo data
+    <span style="color:#73BF69">✓</span> [communities] tempo de resposta &lt; 1s
+    <span style="color:#73BF69">✓</span> [login] status 200
+    <span style="color:#73BF69">✓</span> [login] mfaRequired false
+    <span style="color:#73BF69">✓</span> [login] tempo de resposta &lt; 2s
+    <span style="color:#73BF69">✓</span> [profile] status 200
+    <span style="color:#73BF69">✓</span> [profile] tem campo success
+    <span style="color:#73BF69">✓</span> [profile] tem campo data
+    <span style="color:#73BF69">✓</span> [profile] tempo de resposta &lt; 1s
+    <span style="color:#73BF69">✓</span> [biomes] status 200
+    <span style="color:#73BF69">✓</span> [biomes] tem campo data
+    <span style="color:#73BF69">✓</span> [categories] status 200
+    <span style="color:#73BF69">✓</span> [categories] body é array
+    <span style="color:#73BF69">✓</span> [events] status 200
+    <span style="color:#73BF69">✓</span> [events] body é array
+    <span style="color:#73BF69">✓</span> [alerts] status 200
+    <span style="color:#73BF69">✓</span> [alerts] body é array
+    <span style="color:#73BF69">✓</span> [alerts] tempo de resposta &lt; 1.5s
+    <span style="color:#73BF69">✓</span> [alert-detail] status 200
+    <span style="color:#73BF69">✓</span> [alert-detail] tem campo id
+    <span style="color:#F2495C">✗</span> [create-alert] status 201
+      ↳  0% — <span style="color:#73BF69">✓</span> 0 / <span style="color:#F2495C">✗</span> 1
+    <span style="color:#73BF69">✓</span> [create-alert] tempo de resposta &lt; 2s
+    <span style="color:#73BF69">✓</span> [refresh] status 200
+    <span style="color:#73BF69">✓</span> [refresh] success true
+
+    HTTP
+    http_req_duration..............: avg=31.62ms min=2.41ms med=14.98ms max=109.3ms p(90)=88.41ms p(95)=104.41ms
+      { expected_response:true }...: avg=29.84ms min=2.41ms med=12.9ms  max=109.3ms p(90)=92.87ms p(95)=104.78ms
+    http_req_failed................: 7.14%  1 out of 14
+    http_reqs......................: 14     1.999868/s
+
+    EXECUTION
+    iteration_duration.............: avg=7s      min=7s     med=7s      max=7s      p(90)=7s      p(95)=7s      
+    iterations.....................: 1      0.142848/s
+    vus............................: 1      min=1       max=1
+    vus_max........................: 1      min=1       max=1
+
+    NETWORK
+    data_received..................: 1.3 MB 185 kB/s
+    data_sent......................: 9.9 kB 1.4 kB/s
+
+
+
+
+running (00m07.0s), 0/1 VUs, 1 complete and 0 interrupted iterations
+default <span style="color:#73BF69">✓</span> [ 100% ] 1 VUs  00m07.0s/10m0s  1/1 shared iters
+time="2026-05-27T18:17:33-03:00" level=error msg="thresholds on metrics 'checks, http_req_failed' have been crossed"
+</pre>
+  </div>
+</div>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+<div class="footer">
+  <span>VERACIS API — Relatório de Performance K6</span>
+  <span>Test Run: smoke_20260527_181725 | 27/05/2026, 18:18:39</span>
+</div>
+
+<!-- ── Chart.js Scripts ───────────────────────────────────────────────────── -->
+<script>
+const CHART_DEFAULTS = {
+  responsive: true,
+  maintainAspectRatio: true,
+  animation: false,
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: {
+      labels: { color: '#9ca3af', font: { size: 11 }, boxWidth: 12, padding: 12 },
+    },
+    tooltip: {
+      backgroundColor: '#1f2128',
+      borderColor: '#2d3039',
+      borderWidth: 1,
+      titleColor: '#d4d4d8',
+      bodyColor: '#9ca3af',
+    },
+  },
+  scales: {
+    x: {
+      ticks: { color: '#4b5563', font: { size: 10 }, maxTicksLimit: 10 },
+      grid: { color: '#1e2130' },
+    },
+    y: {
+      ticks: { color: '#4b5563', font: { size: 10 } },
+      grid: { color: '#1e2130' },
+    },
+  },
+};
+
+// ── Latência ──────────────────────────────────────────────────────────────
+new Chart(document.getElementById('chartLatency'), {
+  type: 'line',
+  data: {
+    labels: ["18:17:15","18:17:30"],
+    datasets: [
+      {
+        label: 'p50',
+        data: [9.292,31.388],
+        borderColor: '#73BF69',
+        backgroundColor: 'transparent',
+        borderWidth: 1.5,
+        borderDash: [4, 3],
+        pointRadius: 0,
+        tension: 0.3,
+      },
+      {
+        label: 'p90',
+        data: [57.226,101.783],
+        borderColor: '#FADE2A',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0.3,
+      },
+      {
+        label: 'p95',
+        data: [109.3,101.783],
+        borderColor: '#FF9830',
+        backgroundColor: 'rgba(255,152,48,0.05)',
+        borderWidth: 2,
+        fill: true,
+        pointRadius: 0,
+        tension: 0.3,
+      },
+      {
+        label: 'p99',
+        data: [109.3,101.783],
+        borderColor: '#F2495C',
+        backgroundColor: 'transparent',
+        borderWidth: 2.5,
+        pointRadius: 0,
+        tension: 0.3,
+      },
+    ],
+  },
+  options: {
+    ...CHART_DEFAULTS,
+    scales: {
+      ...CHART_DEFAULTS.scales,
+      y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: 'ms', color: '#4b5563', font: { size: 10 } } },
+    },
+  },
+});
+
+// ── VUs ──────────────────────────────────────────────────────────────────
+new Chart(document.getElementById('chartVus'), {
+  type: 'line',
+  data: {
+    labels: ["18:17:15","18:17:30","18:17:45","18:18:00","18:18:15","18:18:30"],
+    datasets: [{
+      label: 'VUs',
+      data: [1,1,1,1,1,1],
+      borderColor: '#B877D9',
+      backgroundColor: 'rgba(184,119,217,0.1)',
+      borderWidth: 2,
+      fill: true,
+      pointRadius: 0,
+      tension: 0.2,
+    }],
+  },
+  options: {
+    ...CHART_DEFAULTS,
+    scales: {
+      ...CHART_DEFAULTS.scales,
+      y: { ...CHART_DEFAULTS.scales.y, beginAtZero: true, title: { display: true, text: 'VUs', color: '#4b5563', font: { size: 10 } } },
+    },
+  },
+});
+
+// ── Throughput ────────────────────────────────────────────────────────────
+new Chart(document.getElementById('chartReqs'), {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [{
+      label: 'req/s',
+      data: [],
+      borderColor: '#5794F2',
+      backgroundColor: 'rgba(87,148,242,0.1)',
+      borderWidth: 2,
+      fill: true,
+      pointRadius: 0,
+      tension: 0.3,
+    }],
+  },
+  options: {
+    ...CHART_DEFAULTS,
+    scales: {
+      ...CHART_DEFAULTS.scales,
+      y: { ...CHART_DEFAULTS.scales.y, beginAtZero: true, title: { display: true, text: 'req/s', color: '#4b5563', font: { size: 10 } } },
+    },
+  },
+});
+
+// ── Error Rate ────────────────────────────────────────────────────────────
+new Chart(document.getElementById('chartErrors'), {
+  type: 'line',
+  data: {
+    labels: ["18:17:15","18:17:30"],
+    datasets: [{
+      label: 'erro (%)',
+      data: [0,20],
+      borderColor: '#F2495C',
+      backgroundColor: 'rgba(242,73,92,0.15)',
+      borderWidth: 2,
+      fill: true,
+      pointRadius: 0,
+      tension: 0.3,
+    }],
+  },
+  options: {
+    ...CHART_DEFAULTS,
+    scales: {
+      ...CHART_DEFAULTS.scales,
+      y: { ...CHART_DEFAULTS.scales.y, beginAtZero: true, max: 100, title: { display: true, text: '%', color: '#4b5563', font: { size: 10 } } },
+    },
+  },
+});
+</script>
+</body>
+</html>

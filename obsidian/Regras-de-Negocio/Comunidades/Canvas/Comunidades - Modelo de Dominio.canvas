@@ -1,0 +1,22 @@
+{
+	"nodes":[
+		{"id":"da0community00da0","type":"text","text":"# Community\n**Entidade**\n\nname, slug (único), description,\nlat/lng, biomeId, authorId\n\nSem status, sem ciclo de vida.\nFábrica `toCreate()` sem caso de uso.","x":-160,"y":-80,"width":320,"height":180,"color":"6"},
+		{"id":"db0biome00000db0","type":"text","text":"**Biome**\n(⚠️ mora em `domain/common`)\n\nname, slug (único), description\n\nÚnico com caso de uso de escrita:\n`CreateBiomeUseCase`","x":-680,"y":-80,"width":280,"height":180,"color":"2"},
+		{"id":"dc0event00000dc0","type":"text","text":"**Event** (catálogo)\n\nname, slug (único), icon, categoryId\n\n⚠️ Sem relação com Community.\nConsumido por Alertas (`AlertEvent`).","x":360,"y":-80,"width":300,"height":180,"color":"2"},
+		{"id":"dd0user000000dd0","type":"text","text":"**User** (domínio Usuários)\n\nauthorId — criador da comunidade\n(sempre ROOT nos seeds)","x":-160,"y":-340,"width":320,"height":110},
+		{"id":"de0category00de0","type":"text","text":"**Category** (domínio Categorias)\n\ncategoryId do Event\n(Climático, Ambiental, Infraestrutura, Saúde)","x":360,"y":-340,"width":300,"height":110},
+		{"id":"df0repocomm00df0","type":"text","text":"**CommunityRepository**\n\nfindManyWithQueries({ biomeId? })\nordenação fixa: name asc\nescrita herdada, sem uso","x":-160,"y":220,"width":320,"height":120,"color":"3"},
+		{"id":"dg0repoevent0dg0","type":"text","text":"**EventRepository**\n\nfindManyByCategoryId\nfindAll","x":360,"y":220,"width":300,"height":120,"color":"3"},
+		{"id":"dh0repobiome0dh0","type":"text","text":"**BiomeRepository**\n(⚠️ em `domain/common`)\n\nCRUD herdado","x":-680,"y":220,"width":280,"height":120,"color":"3"},
+		{"id":"di0slug000000di0","type":"text","text":"**Slug** (Value Object, `domain/common`)\n\ncreateFromText: NFKD → minúsculas →\nhífens → sem especiais\n\nCompartilhado por Community, Biome e Event.\nUnicidade só por constraint de banco.","x":-160,"y":460,"width":320,"height":130,"color":"5"}
+	],
+	"edges":[
+		{"id":"dj01000000000dj0","fromNode":"da0community00da0","fromSide":"left","toNode":"db0biome00000db0","toSide":"right","label":"pertence a (biomeId)"},
+		{"id":"dj02000000000dj0","fromNode":"da0community00da0","fromSide":"top","toNode":"dd0user000000dd0","toSide":"bottom","toEnd":"none","label":"criada por (authorId)"},
+		{"id":"dj03000000000dj0","fromNode":"dc0event00000dc0","fromSide":"top","toNode":"de0category00de0","toSide":"bottom","label":"classificado por (categoryId)"},
+		{"id":"dj04000000000dj0","fromNode":"da0community00da0","fromSide":"bottom","toNode":"df0repocomm00df0","toSide":"top","color":"3","label":"persistido via"},
+		{"id":"dj05000000000dj0","fromNode":"dc0event00000dc0","fromSide":"bottom","toNode":"dg0repoevent0dg0","toSide":"top","color":"3","label":"persistido via"},
+		{"id":"dj06000000000dj0","fromNode":"db0biome00000db0","fromSide":"bottom","toNode":"dh0repobiome0dh0","toSide":"top","color":"3","label":"persistido via"},
+		{"id":"dj07000000000dj0","fromNode":"df0repocomm00df0","fromSide":"bottom","toNode":"di0slug000000di0","toSide":"top","toEnd":"none","color":"5","label":"slug @unique"}
+	]
+}

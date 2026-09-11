@@ -1,0 +1,260 @@
+{
+  "main": {
+    "id": "dc06ebc78625107a",
+    "type": "split",
+    "children": [
+      {
+        "id": "be46c53fa5d456b1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9fd0c1e76dfa38b5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Análise Arquitetural - Alerts/tasks/15 - RBAC de permissionamento por roles/Passo 1 - Shared kernel user-role.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Passo 1 - Shared kernel user-role"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "dd73f6add4492cf5",
+    "type": "split",
+    "children": [
+      {
+        "id": "8a1c6af12ada085e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bf3f56eecce73315",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de arquivos"
+            }
+          },
+          {
+            "id": "4f059b5e2cbced78",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Procurar"
+            }
+          },
+          {
+            "id": "7e8e3a4917ca93da",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "899cf09b8c12bc8d",
+    "type": "split",
+    "children": [
+      {
+        "id": "9988e08739c58402",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b07102c45c0c5131",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Geral.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Links inversos para Geral"
+            }
+          },
+          {
+            "id": "f49d2ef9c564a5e8",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Geral.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Links de saída para Geral"
+            }
+          },
+          {
+            "id": "6435a621a423955f",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "07990d685afd30fb",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Todas as propriedades"
+            }
+          },
+          {
+            "id": "d95e647145bf7d82",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Geral.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Sumário de Geral"
+            }
+          },
+          {
+            "id": "6900f0283ffb236e",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {},
+              "icon": "spreadsheet",
+              "title": "Advanced Tables"
+            }
+          },
+          {
+            "id": "7e988591fd7fa3d9",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          }
+        ],
+        "currentTab": 6
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "graph-insight:Open Graph Insight": false,
+      "switcher:Abrir a troca rápida": false,
+      "graph:Abrir visualização em gráfico": false,
+      "canvas:Criar novo canvas": false,
+      "daily-notes:Abrir a nota de hoje": false,
+      "templates:Inserir modelo": false,
+      "command-palette:Abrir paleta de comandos": false,
+      "bases:Criar nova base": false,
+      "obsidian-excalidraw-plugin:New drawing": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "obsidian-git:Open Git source control": false
+    }
+  },
+  "active": "9fd0c1e76dfa38b5",
+  "lastOpenFiles": [
+    "Análise Arquitetural - Alerts/tasks/15 - RBAC de permissionamento por roles/Passo 2 - MinRole decorator e RolesGuard.md",
+    "Análise Arquitetural - Alerts/tasks/00 - TODO Geral.md",
+    "Análise Arquitetural - Alerts/tasks/15 - RBAC de permissionamento por roles/Passo 5 - Referencia NestJS e alternativas.md",
+    "Análise Arquitetural - Alerts/tasks/15 - RBAC de permissionamento por roles/Passo 4 - Decisao role por comunidade.md",
+    "Análise Arquitetural - Alerts/tasks/15 - RBAC de permissionamento por roles/Passo 3 - Refatorar checks de dominio para isStaff.md",
+    "Análise Arquitetural - Alerts/tasks/15 - RBAC de permissionamento por roles/15 - RBAC de permissionamento por roles.md",
+    "Análise Arquitetural - Alerts/tasks/15 - RBAC de permissionamento por roles/Passo 1 - Shared kernel user-role.md",
+    "Análise Arquitetural - Alerts/tasks/14 - DomainEventBus injetavel/14 - DomainEventBus injetavel.md",
+    "Contribuicao/contribuicao.md",
+    "Análise Arquitetural - Alerts/tasks/15 - RBAC de permissionamento por roles",
+    "Habilidade-IA/index.md",
+    "CLAUDE.md",
+    "Geral.md",
+    "Análise Arquitetural - Alerts/tasks/05 - Guards de transicao de estado no Alert/05 - Guards de transicao de estado no Alert.md",
+    "Análise Arquitetural - Alerts/tasks/06 - Retry e DLQ reais no BullMQ/06 - Retry e DLQ reais no BullMQ.md",
+    "Análise Arquitetural - Alerts/tasks/04 - Extrair politica de confirmacao de reacao/04 - Extrair politica de confirmacao de reacao.md",
+    "Análise Arquitetural - Alerts/tasks/03 - Corrigir crash no GetAlertMetrics/03 - Corrigir crash no GetAlertMetrics.md",
+    "Análise Arquitetural - Alerts/tasks/02 - Transacao no PrismaAlertRepository/02 - Transacao no PrismaAlertRepository.md",
+    "Análise Arquitetural - Alerts/tasks/01 - Reativar AlertAcceptedEvent/01 - Reativar AlertAcceptedEvent.md",
+    "Análise Arquitetural - Alerts/02 - Violações Arquiteturais/Violações de Clean Architecture.md",
+    "Análise Arquitetural - Alerts/tasks/14 - DomainEventBus injetavel",
+    "Análise Arquitetural - Alerts/tasks/13 - Criar AlertsModule/13 - Criar AlertsModule.md",
+    "Análise Arquitetural - Alerts/tasks/13 - Criar AlertsModule",
+    "Análise Arquitetural - Alerts/tasks/12 - Lint de camadas e shared kernel UserRole/12 - Lint de camadas e shared kernel UserRole.md",
+    "Análise Arquitetural - Alerts/tasks/12 - Lint de camadas e shared kernel UserRole",
+    "Análise Arquitetural - Alerts/tasks/11 - Unificar definicao de alerta de saude/11 - Unificar definicao de alerta de saude.md",
+    "Análise Arquitetural - Alerts/tasks/11 - Unificar definicao de alerta de saude",
+    "Análise Arquitetural - Alerts/tasks/10 - Job de reconciliacao de alertas orfaos/10 - Job de reconciliacao de alertas orfaos.md",
+    "Análise Arquitetural - Alerts/tasks/10 - Job de reconciliacao de alertas orfaos",
+    "Análise Arquitetural - Alerts/tasks/09 - Await nos handlers do DomainEvents/09 - Await nos handlers do DomainEvents.md",
+    "Análise Arquitetural - Alerts/tasks/09 - Await nos handlers do DomainEvents",
+    "Análise Arquitetural - Alerts/tasks/08 - Limpeza de dead code e TTLs nomeados/08 - Limpeza de dead code e TTLs nomeados.md",
+    "Análise Arquitetural - Alerts/tasks/08 - Limpeza de dead code e TTLs nomeados",
+    "Análise Arquitetural - Alerts/tasks/07 - Tirar telemetria do dominio/07 - Tirar telemetria do dominio.md",
+    "Análise Arquitetural - Alerts/tasks/07 - Tirar telemetria do dominio",
+    "Análise Arquitetural - Alerts/tasks/06 - Retry e DLQ reais no BullMQ",
+    "Análise Arquitetural - Alerts/02 - Violações Arquiteturais/Mapa de Dependências.canvas",
+    "Análise Arquitetural - Alerts/04 - Padrões GoF/Mapa de Padrões Aplicáveis.canvas",
+    "Análise Arquitetural - Alerts/Alertas - Arquitetura Atual.canvas",
+    "Regras-de-Negocio/Comunidades/Canvas/Comunidades - Dados de Referencia.canvas",
+    "Regras-de-Negocio/Comunidades/Canvas/Comunidades - Modelo de Dominio.canvas",
+    "Regras-de-Negocio/Comunidades/Canvas/Comunidades - Mapa de Contexto.canvas",
+    "Regras-de-Negocio/Comunidades/Canvas/Comunidades - Mapa Mental.canvas",
+    "Regras-de-Negocio/Usuarios/Canvas/Usuarios - Mapa Mental.canvas",
+    "Regras-de-Negocio/Usuarios/Canvas/Usuarios - Fluxo de Registro.canvas",
+    "Regras-de-Negocio/Usuarios/Canvas/Usuarios - Modelo de Dominio.canvas"
+  ]
+}

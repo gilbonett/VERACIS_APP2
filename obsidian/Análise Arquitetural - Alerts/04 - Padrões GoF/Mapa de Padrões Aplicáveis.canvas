@@ -1,0 +1,34 @@
+{
+	"nodes":[
+		{"id":"1a1a1a1a1a1a1a01","type":"text","x":0,"y":-140,"width":1560,"height":80,"text":"# Problema → Padrão recomendado → Benefício\nVerde = aplicar · Amarelo = já existe, ajustar · Cinza = avaliado e descartado (YAGNI)"},
+		{"id":"1a1a1a1a1a1a1a02","type":"text","x":0,"y":0,"width":380,"height":160,"text":"**Problema**\n3 regras de confirmação inline no CreateAlertReactionUseCase\n(magic number 5, regra invisível ao domínio)","color":"1"},
+		{"id":"1a1a1a1a1a1a1a03","type":"text","x":480,"y":0,"width":340,"height":160,"text":"**Strategy (forma leve)**\npolítica pura reactionConfirmsAlert()\nem domain/alerts/policies","color":"4"},
+		{"id":"1a1a1a1a1a1a1a04","type":"text","x":920,"y":0,"width":380,"height":160,"text":"**Benefício**\nRegra de negócio testável isolada,\nuse case vira orquestrador de 1 caminho","color":"4"},
+		{"id":"1a1a1a1a1a1a1a05","type":"text","x":0,"y":220,"width":380,"height":160,"text":"**Problema**\ndoAccept()/doClose() mudam status\nde qualquer estado (invariantes fora do agregado)","color":"1"},
+		{"id":"1a1a1a1a1a1a1a06","type":"text","x":480,"y":220,"width":340,"height":160,"text":"**State (versão guard)**\nvalidação de transição dentro do agregado\n(sem classes por estado)","color":"4"},
+		{"id":"1a1a1a1a1a1a1a07","type":"text","x":920,"y":220,"width":380,"height":160,"text":"**Benefício**\nCiclo de vida impossível de corromper\npor novo call site","color":"4"},
+		{"id":"1a1a1a1a1a1a1a08","type":"text","x":0,"y":440,"width":380,"height":160,"text":"**Problema**\nAlertAcceptedEvent nunca emitido:\naceite por reação não expira nem notifica","color":"1"},
+		{"id":"1a1a1a1a1a1a1a09","type":"text","x":480,"y":440,"width":340,"height":160,"text":"**Observer (completar)**\nemitir evento + subscribers\nOnAlertAccepted*","color":"3"},
+		{"id":"1a1a1a1a1a1a1a10","type":"text","x":920,"y":440,"width":380,"height":160,"text":"**Benefício**\nCiclo de vida completo:\ncancela pending, agenda accepted,\nnotifica comunidade","color":"4"},
+		{"id":"1a1a1a1a1a1a1a11","type":"text","x":0,"y":660,"width":380,"height":160,"text":"**Problema**\n@ObserveBusiness dentro do domínio\n(domain → infra)","color":"1"},
+		{"id":"1a1a1a1a1a1a1a12","type":"text","x":480,"y":660,"width":340,"height":160,"text":"**Decorator (na composição)**\nuseFactory no módulo envolve\no use case com telemetria","color":"3"},
+		{"id":"1a1a1a1a1a1a1a13","type":"text","x":920,"y":660,"width":380,"height":160,"text":"**Benefício**\nDomínio sem imports de infra,\ntelemetria preservada","color":"4"},
+		{"id":"1a1a1a1a1a1a1a14","type":"text","x":0,"y":880,"width":380,"height":160,"text":"**Problema**\nAlerts sem fronteira física:\nprovers no http.module monolítico","color":"1"},
+		{"id":"1a1a1a1a1a1a1a15","type":"text","x":480,"y":880,"width":340,"height":160,"text":"**Facade → AlertsModule Nest**\nmódulo com exports explícitos\n(Facade de classe descartado)","color":"4"},
+		{"id":"1a1a1a1a1a1a1a16","type":"text","x":920,"y":880,"width":380,"height":160,"text":"**Benefício**\nSubdomain fechado, dependências\nvisíveis na composição","color":"4"},
+		{"id":"1a1a1a1a1a1a1a17","type":"text","x":0,"y":1100,"width":620,"height":200,"text":"**Já existem — manter** ✅\n· Factory Method: Alert.create / reconstitute\n· Adapter: QueueAlertDispatcher (BullMQ), mappers Prisma\n· Command: use cases reusados por HTTP e workers\n· Observer: DomainEvents + guards\n· Specification informal: policies puras testadas","color":"4"},
+		{"id":"1a1a1a1a1a1a1a18","type":"text","x":680,"y":1100,"width":620,"height":200,"text":"**Avaliados e descartados (YAGNI)** —\n· Builder, Prototype, Abstract Factory (sem variação real)\n· Proxy (sem cache/lazy), Composite (condições fixas)\n· CoR (guards fixos), Mediator (DI+eventos já mediam)\n· Template Method (parametrizar > herdar)\n· State completo, Specification formal (custo > ganho)"}
+	],
+	"edges":[
+		{"id":"2b2b2b2b2b2b2b01","fromNode":"1a1a1a1a1a1a1a02","fromSide":"right","toNode":"1a1a1a1a1a1a1a03","toSide":"left"},
+		{"id":"2b2b2b2b2b2b2b02","fromNode":"1a1a1a1a1a1a1a03","fromSide":"right","toNode":"1a1a1a1a1a1a1a04","toSide":"left"},
+		{"id":"2b2b2b2b2b2b2b03","fromNode":"1a1a1a1a1a1a1a05","fromSide":"right","toNode":"1a1a1a1a1a1a1a06","toSide":"left"},
+		{"id":"2b2b2b2b2b2b2b04","fromNode":"1a1a1a1a1a1a1a06","fromSide":"right","toNode":"1a1a1a1a1a1a1a07","toSide":"left"},
+		{"id":"2b2b2b2b2b2b2b05","fromNode":"1a1a1a1a1a1a1a08","fromSide":"right","toNode":"1a1a1a1a1a1a1a09","toSide":"left"},
+		{"id":"2b2b2b2b2b2b2b06","fromNode":"1a1a1a1a1a1a1a09","fromSide":"right","toNode":"1a1a1a1a1a1a1a10","toSide":"left"},
+		{"id":"2b2b2b2b2b2b2b07","fromNode":"1a1a1a1a1a1a1a11","fromSide":"right","toNode":"1a1a1a1a1a1a1a12","toSide":"left"},
+		{"id":"2b2b2b2b2b2b2b08","fromNode":"1a1a1a1a1a1a1a12","fromSide":"right","toNode":"1a1a1a1a1a1a1a13","toSide":"left"},
+		{"id":"2b2b2b2b2b2b2b09","fromNode":"1a1a1a1a1a1a1a14","fromSide":"right","toNode":"1a1a1a1a1a1a1a15","toSide":"left"},
+		{"id":"2b2b2b2b2b2b2b10","fromNode":"1a1a1a1a1a1a1a15","fromSide":"right","toNode":"1a1a1a1a1a1a1a16","toSide":"left"}
+	]
+}

@@ -1,0 +1,37 @@
+{
+	"nodes":[
+		{"id":"3c3c3c3c3c3c3c01","type":"text","text":"# Alerts — Arquitetura Atual (fluxo: criar → confirmar → expirar)","x":0,"y":-160,"width":1400,"height":80},
+		{"id":"3c3c3c3c3c3c3c02","type":"text","text":"**Cliente (apps/web)**\nPOST /alerts\nPOST /alerts/:id/reactions","x":0,"y":0,"width":300,"height":120,"color":"5"},
+		{"id":"3c3c3c3c3c3c3c03","type":"text","text":"**CreateAlertController**\n+ CreateAlertDto\n+ CurrentSession (role)","x":400,"y":0,"width":300,"height":120,"color":"5"},
+		{"id":"3c3c3c3c3c3c3c04","type":"text","text":"**CreateAlertUseCase**\norquestração mínima ✅","x":800,"y":0,"width":280,"height":120,"color":"4"},
+		{"id":"3c3c3c3c3c3c3c05","type":"text","text":"**Alert.create()**\nPENDING (ou ACCEPTED se role ≠ MEMBER)\n+ associa events/risks\n+ AlertCreatedEvent","x":1180,"y":0,"width":320,"height":140,"color":"4"},
+		{"id":"3c3c3c3c3c3c3c06","type":"text","text":"**PrismaAlertRepository.create**\nalert + events + attachments + risks\n⚠️ Promise.all sem $transaction","x":800,"y":240,"width":320,"height":140,"color":"3"},
+		{"id":"3c3c3c3c3c3c3c10","type":"text","text":"**OnAlertCreatedNotifyMembers**\nguard: status ACCEPTED\ncria Notifications p/ comunidade\n(entrega via SSE em Notifications)","x":800,"y":500,"width":340,"height":160,"color":"6"},
+		{"id":"3c3c3c3c3c3c3c12","type":"text","text":"**Processors + DLQ**\nAlertPending / AlertAccepted\n→ CloseExpired*UseCase → doClose()\n→ AlertClosedEvent","x":550,"y":900,"width":360,"height":150,"color":"6"},
+		{"id":"3c3c3c3c3c3c3c11","type":"text","text":"**QueueAlertDispatcher (BullMQ)** ✅\nporta AlertDispatcher\njobId = alertId (idempotente)\n⚠️ sem attempts/backoff","x":-300,"y":900,"width":360,"height":150,"color":"6"},
+		{"id":"3c3c3c3c3c3c3c08","type":"text","text":"**OnAlertCreatedSchedulePendingExpiration**\nguard: status PENDING\nTTL 45min (hardcoded)","x":-520,"y":460,"width":340,"height":160,"color":"6"},
+		{"id":"3c3c3c3c3c3c3c09","type":"text","text":"**OnAlertCreatedScheduleAcceptedExpiration**\nguard: status ACCEPTED\ncancela pending + TTL 30min","x":-40,"y":500,"width":340,"height":160,"color":"6"},
+		{"id":"3c3c3c3c3c3c3c07","type":"text","text":"**DomainEvents (core)**\nmark → dispatch pós-persistência\n⚠️ fire-and-forget","x":300,"y":240,"width":300,"height":140,"color":"3"},
+		{"id":"3c3c3c3c3c3c3c15","type":"text","text":"**Infra de dados**\nPostgreSQL (Prisma)\nRedis (BullMQ, filas + DLQ\nseparadas por operação)","x":1180,"y":940,"width":320,"height":150,"color":"6"},
+		{"id":"3c3c3c3c3c3c3c14","type":"text","text":"**Leitura (CQRS-lite)** ✅\nGetAlerts/GetAlertById\n→ AlertDetailsRepository\n→ filtro health-visibility","x":1020,"y":700,"width":320,"height":140,"color":"4"},
+		{"id":"3c3c3c3c3c3c3c13","type":"text","text":"**CreateAlertReactionUseCase**\n❌ 3 regras de confirmação inline\ndoAccept() SEM AlertAcceptedEvent\n→ pending não cancelado\n→ accepted-TTL não agendado\n→ comunidade não notificada","x":1480,"y":310,"width":320,"height":180,"color":"1"}
+	],
+	"edges":[
+		{"id":"4d4d4d4d4d4d4d01","fromNode":"3c3c3c3c3c3c3c02","fromSide":"right","toNode":"3c3c3c3c3c3c3c03","toSide":"left"},
+		{"id":"4d4d4d4d4d4d4d02","fromNode":"3c3c3c3c3c3c3c03","fromSide":"right","toNode":"3c3c3c3c3c3c3c04","toSide":"left"},
+		{"id":"4d4d4d4d4d4d4d03","fromNode":"3c3c3c3c3c3c3c04","fromSide":"right","toNode":"3c3c3c3c3c3c3c05","toSide":"left"},
+		{"id":"4d4d4d4d4d4d4d04","fromNode":"3c3c3c3c3c3c3c04","fromSide":"bottom","toNode":"3c3c3c3c3c3c3c06","toSide":"top","label":"persiste"},
+		{"id":"4d4d4d4d4d4d4d05","fromNode":"3c3c3c3c3c3c3c06","fromSide":"left","toNode":"3c3c3c3c3c3c3c07","toSide":"right","label":"dispatch"},
+		{"id":"4d4d4d4d4d4d4d06","fromNode":"3c3c3c3c3c3c3c07","fromSide":"bottom","toNode":"3c3c3c3c3c3c3c08","toSide":"top"},
+		{"id":"4d4d4d4d4d4d4d07","fromNode":"3c3c3c3c3c3c3c07","fromSide":"bottom","toNode":"3c3c3c3c3c3c3c09","toSide":"top"},
+		{"id":"4d4d4d4d4d4d4d08","fromNode":"3c3c3c3c3c3c3c07","fromSide":"bottom","toNode":"3c3c3c3c3c3c3c10","toSide":"top"},
+		{"id":"4d4d4d4d4d4d4d09","fromNode":"3c3c3c3c3c3c3c08","fromSide":"bottom","toNode":"3c3c3c3c3c3c3c11","toSide":"top","label":"schedule 45min"},
+		{"id":"4d4d4d4d4d4d4d10","fromNode":"3c3c3c3c3c3c3c09","fromSide":"bottom","toNode":"3c3c3c3c3c3c3c11","toSide":"top","label":"cancel + schedule 30min"},
+		{"id":"4d4d4d4d4d4d4d11","fromNode":"3c3c3c3c3c3c3c11","fromSide":"right","toNode":"3c3c3c3c3c3c3c12","toSide":"left","label":"delayed job"},
+		{"id":"4d4d4d4d4d4d4d12","fromNode":"3c3c3c3c3c3c3c12","fromSide":"top","toNode":"3c3c3c3c3c3c3c07","toSide":"bottom","color":"6","label":"AlertClosedEvent"},
+		{"id":"4d4d4d4d4d4d4d13","fromNode":"3c3c3c3c3c3c3c13","fromSide":"left","toNode":"3c3c3c3c3c3c3c06","toSide":"right","label":"save(alert ACCEPTED)"},
+		{"id":"4d4d4d4d4d4d4d14","fromNode":"3c3c3c3c3c3c3c13","fromSide":"top","toNode":"3c3c3c3c3c3c3c05","toSide":"bottom","color":"1","label":"❌ doAccept sem evento"},
+		{"id":"4d4d4d4d4d4d4d15","fromNode":"3c3c3c3c3c3c3c14","fromSide":"bottom","toNode":"3c3c3c3c3c3c3c15","toSide":"top"},
+		{"id":"4d4d4d4d4d4d4d16","fromNode":"3c3c3c3c3c3c3c12","fromSide":"bottom","toNode":"3c3c3c3c3c3c3c15","toSide":"left"}
+	]
+}

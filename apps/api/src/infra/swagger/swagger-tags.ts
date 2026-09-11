@@ -1,0 +1,15 @@
+export const SWAGGER_TAGS = {
+  WELCOME: "Bem-vindo",
+  AUTH: "Autenticação",
+  SESSION: "Sessão",
+  USERS: "Usuários",
+  COMMUNITIES: "Comunidades",
+  BIOMES: "Biomas",
+  ALERTS: "Alertas",
+  EVENTS: "Eventos",
+  CATEGORIES: "Categorias",
+  RISKS: "Riscos",
+  NOTIFICATIONS: "Notificações",
+  FILES: "Arquivos",
+  HEALTH: "Health",
+} as const;

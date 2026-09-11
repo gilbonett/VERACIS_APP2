@@ -1,0 +1,50 @@
+services:
+
+  # ─── InfluxDB 1.8 — compatível com o output nativo do K6 ────────────────────
+  # NOTA: K6 built-in --out influxdb= suporta APENAS InfluxDB v1.x
+  # Para usar v2, seria necessário compilar o xk6-output-influxdb manualmente.
+  influxdb:
+    image: influxdb:1.8
+    container_name: veracis-k6-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      INFLUXDB_DB: k6
+      INFLUXDB_HTTP_AUTH_ENABLED: "false"   # sem autenticação — ambiente local
+      INFLUXDB_ADMIN_USER: admin
+      INFLUXDB_ADMIN_PASSWORD: veracis123
+      INFLUXDB_USER: k6
+      INFLUXDB_USER_PASSWORD: k6password
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+    healthcheck:
+      test: ["CMD", "influx", "-execute", "SHOW DATABASES"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ─── Grafana — dashboards visuais ────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: veracis-k6-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: veracis123
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/k6-dashboard.json
+      GF_INSTALL_PLUGINS: ""
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      influxdb:
+        condition: service_healthy
+
+volumes:
+  influxdb-data: {}
+  grafana-data: {}

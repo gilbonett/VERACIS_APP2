@@ -1,0 +1,23 @@
+{
+	"nodes":[
+		{"id":"n0client000000000","type":"text","text":"**Cliente**\n\nWeb/Mobile","x":-1160,"y":0,"width":200,"height":90,"color":"3"},
+		{"id":"n1gateway00000000","type":"text","text":"**API Gateway / HTTP Layer**\n\nNestJS · SessionGuard · RolesGuard (proposto)\n@Public / @CurrentSession","x":-860,"y":0,"width":260,"height":110},
+		{"id":"n2identity0000000","type":"text","text":"**Identity Service**\n\nlogin, sessão, MFA, tokens\n(domain/auth)","x":-460,"y":-160,"width":260,"height":110,"color":"4"},
+		{"id":"n3authz000000000","type":"text","text":"**Authorization**\n\nRBAC hierárquico (@MinRole)\n+ Permission catalog (proposto)","x":-460,"y":40,"width":260,"height":110,"color":"4"},
+		{"id":"n4user0000000000","type":"text","text":"**User**\n\ndados cadastrais\n(domain/users)","x":-80,"y":-160,"width":220,"height":90},
+		{"id":"n5audit000000000","type":"text","text":"**Audit**\n\ntrilha de eventos\n(proposto — não implementado)","x":-80,"y":40,"width":220,"height":90,"color":"1"},
+		{"id":"n6apis00000000000","type":"text","text":"**APIs de Domínio**\n\nAlertas, Comunidades, Notificações...","x":260,"y":-60,"width":240,"height":90,"color":"3"},
+		{"id":"n7legend00000000","type":"text","text":"🔵 Cliente/Fronteira · ⚪ Infra/Regra · 🟣 Identity/Authorization (núcleo desta doc) · 🔴 Proposto, não implementado","x":-1160,"y":260,"width":1140,"height":60,"color":"5"}
+	],
+	"edges":[
+		{"id":"e0","fromNode":"n0client000000000","fromSide":"right","toNode":"n1gateway00000000","toSide":"left","label":"cookie httpOnly"},
+		{"id":"e1","fromNode":"n1gateway00000000","fromSide":"right","toNode":"n2identity0000000","toSide":"left"},
+		{"id":"e2","fromNode":"n1gateway00000000","fromSide":"right","toNode":"n3authz000000000","toSide":"left"},
+		{"id":"e3","fromNode":"n2identity0000000","fromSide":"right","toNode":"n3authz000000000","toSide":"top","label":"sessão válida + role"},
+		{"id":"e4","fromNode":"n2identity0000000","fromSide":"right","toNode":"n4user0000000000","toSide":"left","label":"lê senha/status/role"},
+		{"id":"e5","fromNode":"n2identity0000000","fromSide":"bottom","toNode":"n5audit000000000","toSide":"top","label":"evento de identidade"},
+		{"id":"e6","fromNode":"n3authz000000000","fromSide":"bottom","toNode":"n5audit000000000","toSide":"left","label":"evento de autorização"},
+		{"id":"e7","fromNode":"n3authz000000000","fromSide":"right","toNode":"n6apis00000000000","toSide":"left","label":"autorizado"},
+		{"id":"e8","fromNode":"n4user0000000000","fromSide":"right","toNode":"n6apis00000000000","toSide":"top"}
+	]
+}

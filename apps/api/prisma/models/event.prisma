@@ -1,0 +1,18 @@
+model Event {
+  id          String  @id @default(uuid())
+  name        String
+  slug        String  @unique
+  description String?
+  icon        String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  categoryId String   @map("category_id")
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  alerts AlertEvent[]
+
+  @@index([slug])
+  @@map("events")
+}

@@ -1,0 +1,40 @@
+{
+	"nodes":[
+		{"id":"c3c3c3c3c3c3c301","type":"group","x":-60,"y":640,"width":1520,"height":320,"color":"4","label":"Domain — domain/alerts"},
+		{"id":"b2b2b2b2b2b2b201","type":"group","x":-60,"y":120,"width":1520,"height":300,"color":"4","label":"Application — domain/alerts/use-cases"},
+		{"id":"d4d4d4d4d4d4d401","type":"group","x":-60,"y":1240,"width":1520,"height":300,"color":"6","label":"Infrastructure"},
+		{"id":"a1a1a1a1a1a1a101","type":"group","x":-60,"y":-320,"width":1520,"height":260,"color":"5","label":"Presentation (infra/http)"},
+		{"id":"c3c3c3c3c3c3c302","type":"text","text":"**Alert (AggregateRoot)**\ndoAccept / doReject / doClose\n❌ AlertAcceptedEvent comentado\n⚠️ transições sem guard","x":0,"y":720,"width":300,"height":160,"color":"1"},
+		{"id":"c3c3c3c3c3c3c303","type":"text","text":"**Events**\nAlertCreatedEvent ✅\nAlertClosedEvent ✅\nAlertAcceptedEvent (morto) ❌","x":360,"y":720,"width":300,"height":160,"color":"3"},
+		{"id":"c3c3c3c3c3c3c304","type":"text","text":"**Policies (funções puras)** ✅\nhealth-alert-visibility\nsingle-click-confirmation\n+ read-model AlertDetails","x":720,"y":720,"width":300,"height":160,"color":"4"},
+		{"id":"c3c3c3c3c3c3c305","type":"text","text":"**Contratos (portas)** ✅\nAlertRepository (+7)\nAlertDispatcher (domain/queue)\n⚠️ updateStatus dead code","x":1080,"y":720,"width":320,"height":160,"color":"4"},
+		{"id":"d4d4d4d4d4d4d404","type":"text","text":"**Subscribers (infra/events)**\nSchedulePending/AcceptedExpiration\nNotifyMembers\n⚠️ TTLs 45/30min hardcoded","x":760,"y":1320,"width":320,"height":160,"color":"3"},
+		{"id":"d4d4d4d4d4d4d402","type":"text","text":"**PrismaAlertRepository** (+7)\n❌ create/save sem $transaction\n⚠️ include ignorado no findById","x":0,"y":1320,"width":320,"height":160,"color":"1"},
+		{"id":"d4d4d4d4d4d4d403","type":"text","text":"**QueueAlertDispatcher (BullMQ)** ✅\nAdapter da porta AlertDispatcher\n⚠️ sem attempts/backoff","x":380,"y":1320,"width":320,"height":160,"color":"3"},
+		{"id":"d4d4d4d4d4d4d405","type":"text","text":"**Telemetria (decorators)**\n@ObserveBusiness / Event /\nQueue / Span","x":1120,"y":1320,"width":280,"height":160,"color":"6"},
+		{"id":"a1a1a1a1a1a1a102","type":"text","text":"**Controllers Alerts**\ncreate / get / reaction /\ncomment / attachment / metrics","x":0,"y":-240,"width":300,"height":120,"color":"5"},
+		{"id":"a1a1a1a1a1a1a103","type":"text","text":"**DTOs + Presenters**\nalert.dto, alert-details.dto\nAlertDetailsPresenter","x":360,"y":-240,"width":260,"height":120,"color":"5"},
+		{"id":"a1a1a1a1a1a1a104","type":"text","text":"**http.module.ts (monolítico)**\n~140 providers\n⚠️ sem AlertsModule","x":680,"y":-240,"width":320,"height":120,"color":"3"},
+		{"id":"a1a1a1a1a1a1a105","type":"text","text":"**Queue Processors (infra/queue)**\nAlertPendingProcessor\nAlertAcceptedProcessor (+ DLQs)","x":1060,"y":-240,"width":340,"height":120,"color":"5"},
+		{"id":"b2b2b2b2b2b2b204","type":"text","text":"**CloseExpiredPending/Accepted**\n⚠️ duplicados, Logger do Nest\nGet/Comment/Attachment/Metrics","x":720,"y":200,"width":320,"height":140,"color":"3"},
+		{"id":"b2b2b2b2b2b2b202","type":"text","text":"**CreateAlertUseCase**\n✅ orquestração mínima\n❌ importa @/infra/telemetry","x":0,"y":200,"width":300,"height":140,"color":"1"},
+		{"id":"b2b2b2b2b2b2b203","type":"text","text":"**CreateAlertReactionUseCase**\n❌ God use case:\n3 regras de confirmação inline","x":360,"y":200,"width":300,"height":140,"color":"1"},
+		{"id":"e5e5e5e5e5e5e502","type":"text","text":"**domain/users**\nUserRole (shared kernel implícito)\nUserRepository / Membership","x":1670,"y":200,"width":300,"height":140,"color":"6"},
+		{"id":"e5e5e5e5e5e5e501","type":"text","text":"**core/events/DomainEvents**\n⚠️ singleton estático global\n⚠️ dispatch fire-and-forget\n(callback sem await)","x":1720,"y":700,"width":300,"height":200,"color":"3"}
+	],
+	"edges":[
+		{"id":"f0f0f0f0f0f00001","fromNode":"a1a1a1a1a1a1a102","fromSide":"bottom","toNode":"b2b2b2b2b2b2b202","toSide":"top","label":"injeta ✅"},
+		{"id":"f0f0f0f0f0f00002","fromNode":"a1a1a1a1a1a1a105","fromSide":"bottom","toNode":"b2b2b2b2b2b2b204","toSide":"top","label":"reusa use case ✅"},
+		{"id":"f0f0f0f0f0f00003","fromNode":"b2b2b2b2b2b2b202","fromSide":"bottom","toNode":"c3c3c3c3c3c3c302","toSide":"top","label":"Alert.create ✅"},
+		{"id":"f0f0f0f0f0f00004","fromNode":"b2b2b2b2b2b2b204","fromSide":"bottom","toNode":"c3c3c3c3c3c3c305","toSide":"top","label":"portas ✅"},
+		{"id":"f0f0f0f0f0f00005","fromNode":"d4d4d4d4d4d4d402","fromSide":"top","toNode":"c3c3c3c3c3c3c305","toSide":"bottom","label":"implementa ✅ (inversão)"},
+		{"id":"f0f0f0f0f0f00006","fromNode":"d4d4d4d4d4d4d403","fromSide":"top","toNode":"c3c3c3c3c3c3c305","toSide":"bottom","label":"implementa ✅"},
+		{"id":"f0f0f0f0f0f00007","fromNode":"d4d4d4d4d4d4d404","fromSide":"top","toNode":"c3c3c3c3c3c3c303","toSide":"bottom","label":"assina eventos ✅"},
+		{"id":"f0f0f0f0f0f00008","fromNode":"b2b2b2b2b2b2b202","fromSide":"right","toNode":"d4d4d4d4d4d4d405","toSide":"top","color":"1","label":"❌ VIOLAÇÃO: domain → infra/telemetry"},
+		{"id":"f0f0f0f0f0f00009","fromNode":"b2b2b2b2b2b2b203","fromSide":"right","toNode":"e5e5e5e5e5e5e502","toSide":"left","color":"1","label":"❌ membershipRepository injetado sem uso"},
+		{"id":"f0f0f0f0f0f00010","fromNode":"c3c3c3c3c3c3c302","fromSide":"right","toNode":"c3c3c3c3c3c3c303","toSide":"left","color":"1","label":"❌ doAccept NÃO emite AlertAcceptedEvent"},
+		{"id":"f0f0f0f0f0f00011","fromNode":"d4d4d4d4d4d4d402","fromSide":"right","toNode":"e5e5e5e5e5e5e501","toSide":"left","label":"dispatch pós-persistência ✅"},
+		{"id":"f0f0f0f0f0f00013","fromNode":"b2b2b2b2b2b2b204","fromSide":"right","toNode":"e5e5e5e5e5e5e502","toSide":"left","color":"3","label":"⚠️ UserRole cross-domain"},
+		{"id":"f0f0f0f0f0f00012","fromNode":"e5e5e5e5e5e5e501","fromSide":"bottom","toNode":"d4d4d4d4d4d4d404","toSide":"top","color":"3","label":"⚠️ fire-and-forget"}
+	]
+}

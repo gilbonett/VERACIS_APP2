@@ -1,0 +1,216 @@
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - apps/api/**
+      - apps/web/**
+
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - name: NODE_VERSION
+    value: "20.x"
+  - name: PNPM_CACHE_FOLDER
+    value: $(Pipeline.Workspace)/.pnpm-store
+
+stages:
+  - stage: DetectChanges
+    displayName: "🔍 Detect Changes"
+    jobs:
+      - job: CheckChanges
+        displayName: "Check what changed"
+        steps:
+          - checkout: self
+            fetchDepth: 2
+
+          - bash: |
+              set -euo pipefail
+              echo "==================================="
+              echo "🔍 Checking for changes..."
+              echo "==================================="
+
+              CHANGED_FILES="$(git diff --name-only HEAD~1 HEAD || true)"
+              echo "Changed files:"
+              echo "${CHANGED_FILES}"
+
+              if echo "${CHANGED_FILES}" | grep -q '^apps/api/'; then
+                echo "✅ API changed - will build"
+                echo "##vso[task.setvariable variable=BUILD_API;isOutput=true]true"
+              else
+                echo "⏭️  API unchanged - skipping"
+                echo "##vso[task.setvariable variable=BUILD_API;isOutput=true]false"
+              fi
+
+              if echo "${CHANGED_FILES}" | grep -q '^apps/web/'; then
+                echo "✅ Web changed - will build"
+                echo "##vso[task.setvariable variable=BUILD_WEB;isOutput=true]true"
+              else
+                echo "⏭️  Web unchanged - skipping"
+                echo "##vso[task.setvariable variable=BUILD_WEB;isOutput=true]false"
+              fi
+
+              echo "==================================="
+            name: changes
+            displayName: "🔍 Detect changes"
+            workingDirectory: $(Build.SourcesDirectory)
+
+  - stage: WebCheckout
+    displayName: "CI (PR) - Web"
+    dependsOn: DetectChanges
+    condition: eq(dependencies.DetectChanges.outputs['CheckChanges.changes.BUILD_WEB'], 'true')
+    jobs:
+      - job: BuildWeb
+        displayName: "Build Web"
+        steps:
+          - checkout: self
+
+          - script: |
+              echo "##[group]Web Context"
+              echo "WEB_CHANGED=$(WEB_CHANGED)"
+              echo "API_CHANGED=$(API_CHANGED)"
+              echo "OUTSIDE_CHANGED=$(OUTSIDE_CHANGED)"
+              echo "Commit: $(Build.SourceVersion)"
+              echo "##[endgroup]"
+            displayName: "🧾 Web Context"
+
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+              checkLatest: true
+            displayName: "📦 Install Node.js"
+
+          - script: |
+              set -e
+              npm install -g pnpm@10.0.0
+              pnpm --version
+            displayName: "📦 Install pnpm"
+
+          - task: Cache@2
+            inputs:
+              key: 'pnpm-ci | "$(Agent.OS)" | pnpm-lock.yaml'
+              restoreKeys: |
+                pnpm-ci | "$(Agent.OS)"
+                pnpm-ci
+              path: $(PNPM_CACHE_FOLDER)
+            displayName: "💾 Cache pnpm"
+
+          # - task: Cache@2
+          #   inputs:
+          #     key: 'next-cache-ci | "$(Agent.OS)" | apps/web/package.json'
+          #     restoreKeys: |
+          #       next-cache-ci | "$(Agent.OS)"
+          #       next-cache-ci
+          #     path: $(Build.SourcesDirectory)/apps/web/.next/cache
+          #   displayName: "💾 Cache Next.js (web)"
+
+          - script: |
+              set -e
+              echo "##[group]Install deps (root)"
+              pnpm config set store-dir $(PNPM_CACHE_FOLDER)
+              pnpm install --frozen-lockfile
+              echo "##[endgroup]"
+            displayName: "📥 Install dependencies"
+            workingDirectory: $(Build.SourcesDirectory)
+
+          - script: |
+              set -e
+              echo "##[group]Create apps/web/.env (build-time)"
+              cat > apps/web/.env << EOF
+              NEXT_PUBLIC_API_URL=http://localhost:3000
+              NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=dngdnvdjcjdnvksnv
+              JWT_PUBLIC_KEY=nsjcnsjcbjscjsc
+              NODE_ENV=development
+              EOF
+              echo "✅ .env created (values hidden)"
+              echo "##[endgroup]"
+            displayName: "🔧 Setup Web .env"
+            workingDirectory: $(Build.SourcesDirectory)
+
+          # - script: |
+          #     set -e
+          #     echo "##[group]Build Web"
+          #     pnpm --filter @veracis/web build
+          #     echo "##[endgroup]"
+          #   displayName: "🏗️ Build Web"
+          #   workingDirectory: $(Build.SourcesDirectory)
+
+  - stage: ApiCheckout
+    displayName: "CI (PR) - Api"
+    dependsOn: DetectChanges
+    condition: eq(dependencies.DetectChanges.outputs['CheckChanges.changes.BUILD_API'], 'true')
+    jobs:
+      - job: BuildApi
+        displayName: "Build API"
+        steps:
+          - checkout: self
+
+          - script: |
+              echo "##[group]API Context"
+              echo "WEB_CHANGED=$(WEB_CHANGED)"
+              echo "API_CHANGED=$(API_CHANGED)"
+              echo "OUTSIDE_CHANGED=$(OUTSIDE_CHANGED)"
+              echo "Commit: $(Build.SourceVersion)"
+              echo "##[endgroup]"
+            displayName: "🧾 API Context"
+
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+              checkLatest: true
+            displayName: "📦 Install Node.js"
+
+          - script: |
+              set -e
+              npm install -g pnpm@10.0.0
+              pnpm --version
+            displayName: "📦 Install pnpm"
+
+          - task: Cache@2
+            inputs:
+              key: 'pnpm-ci | "$(Agent.OS)" | pnpm-lock.yaml'
+              restoreKeys: |
+                pnpm-ci | "$(Agent.OS)"
+                pnpm-ci
+              path: $(PNPM_CACHE_FOLDER)
+            displayName: "💾 Cache pnpm"
+
+          - script: |
+              set -e
+              echo "##[group]Install deps (root)"
+              pnpm config set store-dir $(PNPM_CACHE_FOLDER)
+              pnpm install --frozen-lockfile
+              echo "##[endgroup]"
+            displayName: "📥 Install dependencies"
+            workingDirectory: $(Build.SourcesDirectory)
+
+          - script: |
+              set -e
+              echo "##[group]Create apps/api/.env (build-time)"
+              cat > apps/api/.env << EOF
+              DATABASE_URL=postgresql://admin:admin@localhost:5432/postgres?schema=public
+              EOF
+              echo "✅ .env created (values hidden)"
+              echo "##[endgroup]"
+            displayName: "🔧 Setup Api .env"
+            workingDirectory: $(Build.SourcesDirectory)
+
+          - script: |
+              set -e
+              echo "##[group]Generate Prisma Client"
+              pnpm --filter @veracis/api db:generate
+              echo "##[endgroup]"
+            displayName: "🔧 Generate Prisma Client"
+            workingDirectory: $(Build.SourcesDirectory)
+
+          - script: |
+              set -e
+              echo "##[group]Build API"
+              pnpm --filter @veracis/api build
+              echo "##[endgroup]"
+            displayName: "🏗️ Build API"
+            workingDirectory: $(Build.SourcesDirectory)

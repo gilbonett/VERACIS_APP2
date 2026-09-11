@@ -1,0 +1,16 @@
+node_modules
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/.env.local
+**/.env.*
+**/coverage
+**/.DS_Store
+**/npm-debug.log
+**/yarn-error.log
+packages/*/node_modules
+packages/*/dist
+packages/*/.next
+packages/*/.turbo
+packages/*/coverage

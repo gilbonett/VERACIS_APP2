@@ -1,0 +1,22 @@
+model OtpChallenge {
+  id        String            @id @default(uuid())
+  state     OtpChallengeState @default(PENDING_EMAIL)
+  email     String
+  codeHash  String?           @map("code_hash")
+  attempts  Int               @default(0)
+  expiresAt DateTime          @map("expires_at")
+  createdAt DateTime          @default(now()) @map("created_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("otp_challenges")
+}
+
+enum OtpChallengeState {
+  PENDING_EMAIL
+  PENDING_CODE
+  VERIFIED
+  EXPIRED
+}

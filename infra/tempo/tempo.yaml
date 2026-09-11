@@ -1,0 +1,98 @@
+server:
+  http_listen_port: 3200
+internal_server:
+  enable: true
+  http_listen_port: 3101
+stream_over_http_enabled: true
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+storage:
+  trace:
+    backend: s3
+    s3:
+      bucket: ${TEMPO_S3_BUCKET}
+      region: ${AWS_REGION}
+      endpoint: s3.${AWS_REGION}.amazonaws.com
+      forcepathstyle: false
+    wal:
+      path: /tmp/tempo/wal
+    local:
+      path: /tmp/tempo/blocks
+compactor:
+  compaction:
+    # 14 dias — ajuste conforme sua política de retenção/custo de S3.
+    block_retention: 336h
+metrics_generator:
+  ring:
+    kvstore:
+      store: inmemory
+  processor:
+    service_graphs:
+      max_items: 10000
+      wait: 2s
+      dimensions:
+        - http.method
+        - http.status_code
+      peer_attributes:
+        - peer.service
+        - db.system
+        - messaging.system
+        - server.address
+        - db.name
+        - net.peer.name
+        - aws.s3.bucket
+      enable_virtual_node_label: true
+    span_metrics:
+      dimensions:
+        - service.name
+        - http.method
+        - http.status_code
+        - http.route
+      enable_target_info: true
+      histogram_buckets:
+        [
+          0.002,
+          0.004,
+          0.008,
+          0.016,
+          0.032,
+          0.064,
+          0.128,
+          0.256,
+          0.512,
+          1.024,
+          2.048,
+          4.096,
+          8.192,
+          16.384,
+        ]
+  registry:
+    external_labels:
+      source: tempo
+      cluster: veracis
+  storage:
+    path: /tmp/tempo/generator/wal
+    remote_write:
+      - url: http://${MIMIR_ENDPOINT}:9009/api/v1/push
+        send_exemplars: true
+overrides:
+  defaults:
+    metrics_generator:
+      processors:
+        - service-graphs
+        - span-metrics
+    # Sem limits antes = qualquer trace anômalo (payload grande em
+    # attribute, N spans) cresce sem controle. Valores conservadores,
+    # ajuste conforme o payload real da sua API.
+    ingestion:
+      max_traces_per_user: 100000
+      rate_limit_bytes: 20000000 # 20MB/s
+      burst_size_bytes: 40000000 # 40MB
+    global:
+      max_bytes_per_trace: 5000000 # 5MB por trace

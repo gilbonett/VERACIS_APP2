@@ -1,0 +1,47 @@
+name: "[CI] VERACIS-WEB"
+
+trigger:
+  branches:
+    include: [main]
+  paths:
+    include:
+      - apps/web/**
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - package.json
+      - turbo.json
+    exclude:
+      - "**/*.md"
+      - "**/docs/**"
+
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - template: ../templates/ci-docker-ecr.yml
+    parameters:
+      stageName: DockerBuildAndPush
+      stageDisplayName: "🐳 Build & Push – Web"
+      jobDisplayName: "Build Web image (SHA) → ECR + Artifacts"
+      dockerImageName: "veracis-web"
+      dockerfilePath: "apps/web/Dockerfile"
+      dockerBuildContext: "."
+      dockerBuildArgs: >-
+        --build-arg NEXT_PUBLIC_API_URL="$(NEXT_PUBLIC_API_URL)"
+        --build-arg NEXT_PUBLIC_APP_URL="$(NEXT_PUBLIC_APP_URL)"
+        --build-arg NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN="$(NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN)"
+        --build-arg JWT_PUBLIC_KEY="$(JWT_PUBLIC_KEY)"
+      awsCredentials: "veracis-aws-oidc"
+      awsRegionVar: "$(AWS_REGION)"
+      ecrRegistryVar: "$(ECR_REGISTRY)"
+      ecrRepositoryVar: "$(ECR_WEB_REPOSITORY)"
+      pushImage: true
+      pushLatest: true
+      publishDockerTarArtifact: true
+      dockerArtifactName: "docker-image-web"
+      metadataArtifactName: "build-metadata-web"
+      variableGroups:
+        - Veracis-Web-Build-Variables
+        - Veracis-Registry

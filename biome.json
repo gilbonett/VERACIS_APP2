@@ -1,0 +1,15 @@
+{
+  "root": true,
+  "$schema": "https://biomejs.dev/schemas/2.3.4/schema.json",
+  "extends": ["@veracis/biome"],
+  "files": {
+    "includes": [
+      "apps/api/**/*.ts",
+      "apps/web/**/*.ts",
+      "apps/web/**/*.tsx",
+      "packages/**/*.ts",
+      "!!apps/web/.next",
+      "!!apps/web/next-env.d.ts"
+    ]
+  }
+}

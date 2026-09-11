@@ -1,0 +1,25 @@
+model FederatedProviderConfig {
+  id                    String                 @id @default(uuid())
+  slug                  String
+  displayName           String                 @map("display_name")
+  issuerUrl             String                 @map("issuer_url")
+  clientId              String                 @map("client_id")
+  clientSecret          String                 @map("client_secret")
+  jwksUri               String?                @map("jwks_uri")
+  scopes                String[]
+  assuranceLevelMapping Json                   @map("assurance_level_mapping")
+  claim                 FederatedProviderClaim
+  redirectUri           String                 @map("redirect_uri")
+  enabled               Boolean                @map("enabled")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([slug])
+  @@map("federated_provider_configs")
+}
+
+enum FederatedProviderClaim {
+  CPF
+  EMAIL
+}

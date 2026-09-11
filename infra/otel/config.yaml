@@ -1,0 +1,101 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+        auth:
+          authenticator: bearertokenauth
+      grpc:
+        endpoint: 0.0.0.0:4317
+        auth:
+          authenticator: bearertokenauth
+  redis:
+    endpoint: "${env:REDIS_HOST}:${env:REDIS_PORT}"
+    collection_interval: 30s
+  postgresql:
+    endpoint: "${env:POSTGRES_HOST}:${env:POSTGRES_PORT}"
+    username: "${env:POSTGRES_USER}"
+    password: "${env:POSTGRES_PASSWORD}"
+    databases:
+      - "${env:POSTGRES_DB}"
+    collection_interval: 30s
+    tls:
+      insecure: false
+      insecure_skip_verify: true
+
+processors:
+  batch:
+  memory_limiter:
+    check_interval: 1s
+    # 400/100 era valor de dev/staging — baixo pra um collector recebendo
+    # trace+metric+log de 1 API + receivers redis/postgresql juntos sob
+    # carga real. Ajuste conforme o limite de memória real do container.
+    limit_mib: 1024
+    spike_limit_mib: 256
+  resourcedetection:
+    detectors: [ecs, ec2, env]
+    timeout: 5s
+    override: false
+
+exporters:
+  # retry_on_failure + sending_queue em todos: sem isso, uma queda breve
+  # do Mimir/Tempo/Loki perdia tudo que não deu tempo de exportar (nada
+  # ficava retido em fila, só o que já tava em memória no batch atual).
+  otlphttp/mimir:
+    endpoint: http://${env:MIMIR_ENDPOINT}:9009/otlp
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 5m
+    sending_queue:
+      enabled: true
+      num_consumers: 10
+      queue_size: 5000
+  otlp/tempo:
+    endpoint: ${env:TEMPO_ENDPOINT}:4317
+    tls:
+      insecure: true
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 5m
+    sending_queue:
+      enabled: true
+      num_consumers: 10
+      queue_size: 5000
+  otlphttp/loki:
+    endpoint: http://${env:LOKI_ENDPOINT}:3100/otlp
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 5m
+    sending_queue:
+      enabled: true
+      num_consumers: 10
+      queue_size: 5000
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+  bearertokenauth:
+    scheme: "Bearer"
+    token: "${env:OTEL_AUTH_TOKEN}"
+
+service:
+  extensions: [health_check, bearertokenauth]
+  pipelines:
+    metrics:
+      receivers: [otlp, redis, postgresql]
+      processors: [memory_limiter, resourcedetection, batch]
+      exporters: [otlphttp/mimir]
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, resourcedetection, batch]
+      exporters: [otlp/tempo]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, resourcedetection, batch]
+      exporters: [otlphttp/loki]

@@ -1,0 +1,169 @@
+parameters:
+  - name: stageName
+    type: string
+  - name: stageDisplayName
+    type: string
+  - name: jobDisplayName
+    type: string
+  - name: dockerImageName
+    type: string
+  - name: dockerfilePath
+    type: string
+  - name: dockerBuildContext
+    type: string
+    default: "."
+  - name: dockerBuildArgs
+    type: string
+    default: ""
+  - name: awsCredentials
+    type: string
+  - name: awsRegionVar
+    type: string
+  - name: ecrRegistryVar
+    type: string
+  - name: ecrRepositoryVar
+    type: string
+  - name: pushImage
+    type: boolean
+    default: true
+  - name: pushLatest
+    type: boolean
+    default: false
+  - name: publishDockerTarArtifact
+    type: boolean
+    default: false
+  - name: dockerArtifactName
+    type: string
+    default: docker-image
+  - name: metadataArtifactName
+    type: string
+    default: build-metadata
+  - name: variableGroups
+    type: object
+    default: []
+
+stages:
+  - stage: ${{ parameters.stageName }}
+    displayName: ${{ parameters.stageDisplayName }}
+    jobs:
+      - job: BuildAndPush
+        displayName: ${{ parameters.jobDisplayName }}
+        timeoutInMinutes: 40
+        variables:
+          - ${{ each g in parameters.variableGroups }}:
+              - group: ${{ g }}
+
+        steps:
+          - checkout: self
+            fetchDepth: 0
+
+          - script: |
+              set -euo pipefail
+              SHORT_SHA="$(echo "$(Build.SourceVersion)" | cut -c1-7)"
+              BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+              echo "##vso[task.setvariable variable=IMAGE_TAG]${SHORT_SHA}"
+              echo "##vso[task.setvariable variable=BUILD_DATE]${BUILD_DATE}"
+            displayName: "🏷️ Derive commit SHA tag"
+            workingDirectory: $(Build.SourcesDirectory)
+
+          - script: |
+              set -euo pipefail
+
+              docker build \
+                -f "${{ parameters.dockerfilePath }}" \
+                -t "${{ parameters.dockerImageName }}:$(IMAGE_TAG)" \
+                ${{ parameters.dockerBuildArgs }} \
+                --label "org.opencontainers.image.revision=$(Build.SourceVersion)" \
+                --label "org.opencontainers.image.ref.name=$(Build.SourceBranchName)" \
+                --label "org.opencontainers.image.created=$(BUILD_DATE)" \
+                --label "pipeline.build.id=$(Build.BuildId)" \
+                "${{ parameters.dockerBuildContext }}"
+
+              if [ "${{ lower(parameters.pushLatest) }}" = "true" ]; then
+                docker tag "${{ parameters.dockerImageName }}:$(IMAGE_TAG)" "${{ parameters.dockerImageName }}:latest"
+              fi
+            displayName: "🐳 Build Docker image"
+            workingDirectory: $(Build.SourcesDirectory)
+
+          - task: AWSShellScript@1
+            displayName: "☁️ Push to Amazon ECR"
+            condition: and(succeeded(), eq('${{ lower(parameters.pushImage) }}', 'true'))
+            inputs:
+              awsCredentials: "${{ parameters.awsCredentials }}"
+              regionName: "${{ parameters.awsRegionVar }}"
+              scriptType: "inline"
+              inlineScript: |
+                set -euo pipefail
+                FULL_IMAGE="${{ parameters.ecrRegistryVar }}/${{ parameters.ecrRepositoryVar }}"
+                TAG="$(IMAGE_TAG)"
+
+                aws ecr get-login-password --region "${{ parameters.awsRegionVar }}" \
+                  | docker login --username AWS --password-stdin "${{ parameters.ecrRegistryVar }}"
+
+                docker tag "${{ parameters.dockerImageName }}:${TAG}" "${FULL_IMAGE}:${TAG}"
+                docker push "${FULL_IMAGE}:${TAG}"
+
+                if [ "${{ lower(parameters.pushLatest) }}" = "true" ]; then
+                  docker tag "${{ parameters.dockerImageName }}:${TAG}" "${FULL_IMAGE}:latest"
+                  docker push "${FULL_IMAGE}:latest"
+                fi
+
+                DIGEST="$(aws ecr describe-images \
+                  --repository-name "${{ parameters.ecrRepositoryVar }}" \
+                  --image-ids imageTag="${TAG}" \
+                  --region "${{ parameters.awsRegionVar }}" \
+                  --query 'imageDetails[0].imageDigest' \
+                  --output text)"
+
+                echo "##vso[task.setvariable variable=ECR_IMAGE_URI]${FULL_IMAGE}:${TAG}"
+                echo "##vso[task.setvariable variable=IMAGE_DIGEST]${DIGEST}"
+
+          - script: |
+              set -euo pipefail
+              if [ "${{ lower(parameters.publishDockerTarArtifact) }}" != "true" ]; then
+                exit 0
+              fi
+              ART_DIR="$(Build.ArtifactStagingDirectory)/docker-image"
+              TAR="${ART_DIR}/${{ parameters.dockerImageName }}-$(IMAGE_TAG).tar"
+              mkdir -p "${ART_DIR}"
+              docker save "${{ parameters.dockerImageName }}:$(IMAGE_TAG)" -o "${TAR}"
+              gzip "${TAR}"
+            displayName: "💾 Save image as tar.gz (optional)"
+            workingDirectory: $(Build.SourcesDirectory)
+
+          - task: PublishPipelineArtifact@1
+            condition: and(succeeded(), eq('${{ lower(parameters.publishDockerTarArtifact) }}', 'true'))
+            displayName: "📤 Publish docker-image artifact (optional)"
+            inputs:
+              targetPath: $(Build.ArtifactStagingDirectory)/docker-image
+              artifact: ${{ parameters.dockerArtifactName }}
+              publishLocation: pipeline
+
+          - script: |
+              set -euo pipefail
+              META_DIR="$(Build.ArtifactStagingDirectory)/metadata"
+              mkdir -p "${META_DIR}"
+
+              cat > "${META_DIR}/build-info.json" << EOF
+              {
+                "imageName":    "${{ parameters.dockerImageName }}",
+                "imageTag":     "$(IMAGE_TAG)",
+                "imageDigest":  "$(IMAGE_DIGEST)",
+                "commitSha":    "$(Build.SourceVersion)",
+                "branch":       "$(Build.SourceBranchName)",
+                "buildId":      "$(Build.BuildId)",
+                "buildDate":    "$(BUILD_DATE)",
+                "ecrImageUri":  "$(ECR_IMAGE_URI)",
+                "artifactName": "${{ parameters.dockerArtifactName }}",
+                "artifactFile": "${{ parameters.dockerImageName }}-$(IMAGE_TAG).tar.gz"
+              }
+              EOF
+            displayName: "📄 Write build metadata"
+            workingDirectory: $(Build.SourcesDirectory)
+
+          - task: PublishPipelineArtifact@1
+            displayName: "📤 Publish metadata artifact"
+            inputs:
+              targetPath: $(Build.ArtifactStagingDirectory)/metadata
+              artifact: ${{ parameters.metadataArtifactName }}
+              publishLocation: pipeline

@@ -1,0 +1,62 @@
+{
+  "name": "veracis",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "start": "turbo run start",
+    "db:generate": "turbo run db:generate",
+    "db:deploy": "pnpm --filter @veracis/api db:deploy",
+    "lint": "turbo run lint",
+    "test": "pnpm --filter @veracis/api test",
+    "test:cov": "pnpm --filter @veracis/api test:cov",
+    "test:e2e": "pnpm --filter @veracis/api test:e2e",
+    "format": "turbo run format",
+    "check-types": "turbo run check-types",
+    "docker:build": "turbo run docker:build",
+    "docker:up": "turbo run docker:up",
+    "docker:down": "turbo run docker:down",
+    "k6:smoke": "k6 run k6/scenarios/smoke/smoke.test.js",
+    "k6:load:auth": "k6 run k6/scenarios/load/auth-flow.test.js",
+    "k6:load:read": "k6 run k6/scenarios/load/read-only.test.js",
+    "k6:load:write": "k6 run k6/scenarios/load/write-ops.test.js",
+    "k6:stress": "k6 run k6/scenarios/stress/stress.test.js",
+    "k6:spike": "k6 run k6/scenarios/spike/spike.test.js",
+    "k6:soak": "k6 run k6/scenarios/soak/soak.test.js",
+    "k6:smoke:grafana": "bash k6/scripts/run-test.sh smoke k6/scenarios/smoke/smoke.test.js",
+    "k6:load:grafana": "bash k6/scripts/run-test.sh load k6/scenarios/load/auth-flow.test.js",
+    "k6:load:read:grafana": "bash k6/scripts/run-test.sh load-read k6/scenarios/load/read-only.test.js",
+    "k6:load:write:grafana": "bash k6/scripts/run-test.sh load-write k6/scenarios/load/write-ops.test.js",
+    "k6:stress:grafana": "bash k6/scripts/run-test.sh stress k6/scenarios/stress/stress.test.js",
+    "k6:spike:grafana": "bash k6/scripts/run-test.sh spike k6/scenarios/spike/spike.test.js",
+    "k6:soak:grafana": "bash k6/scripts/run-test.sh soak k6/scenarios/soak/soak.test.js",
+    "k6:dashboard:up": "docker compose -f k6/docker-compose.k6.yml up -d",
+    "k6:dashboard:down": "docker compose -f k6/docker-compose.k6.yml down",
+    "k6:export-pdf": "bash k6/scripts/export-pdf.sh"
+  },
+  "devDependencies": {
+    "@veracis/biome": "workspace:*",
+    "@biomejs/biome": "2.3.4",
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
+    "turbo": "^2.5.8"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "pnpm": {
+    "overrides": {
+      "multer": ">=2.2.0",
+      "nodemailer": ">=9.0.1",
+      "uuid": ">=11.1.1",
+      "js-yaml": ">=4.2.0",
+      "@hono/node-server": ">=1.19.13",
+      "esbuild": ">=0.28.1",
+      "postcss": ">=8.5.10"
+    }
+  }
+}

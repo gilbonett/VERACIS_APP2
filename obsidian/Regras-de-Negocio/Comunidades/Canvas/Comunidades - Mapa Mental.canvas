@@ -1,0 +1,31 @@
+{
+	"nodes":[
+		{"id":"ca00000000000ca0","type":"text","x":-150,"y":-70,"width":300,"height":140,"text":"# Comunidades\n\nDomínio de Negócio — Índice Mestre\n\n[[Comunidades]]","color":"6"},
+		{"id":"cb01000000000cb0","type":"file","x":-1060,"y":-480,"width":260,"height":300,"file":"Regras-de-Negocio/Comunidades/01-Modelo-e-Conceitos.md","color":"1"},
+		{"id":"cb02000000000cb0","type":"file","x":-630,"y":-480,"width":260,"height":300,"file":"Regras-de-Negocio/Comunidades/02-Consulta-de-Comunidades.md","color":"1"},
+		{"id":"cb03000000000cb0","type":"file","x":-200,"y":-480,"width":260,"height":300,"file":"Regras-de-Negocio/Comunidades/03-Eventos.md","color":"1"},
+		{"id":"cb04000000000cb0","type":"file","x":230,"y":-480,"width":260,"height":300,"file":"Regras-de-Negocio/Comunidades/04-Dados-de-Referencia-e-Seeds.md","color":"6"},
+		{"id":"cb05000000000cb0","type":"file","x":-1060,"y":340,"width":260,"height":320,"file":"Regras-de-Negocio/Comunidades/05-Erros-de-Dominio.md","color":"2"},
+		{"id":"cb06000000000cb0","type":"file","x":-630,"y":340,"width":260,"height":320,"file":"Regras-de-Negocio/Comunidades/06-Contratos-de-Repositorio.md","color":"3"},
+		{"id":"cb07000000000cb0","type":"file","x":-200,"y":340,"width":260,"height":320,"file":"Regras-de-Negocio/Comunidades/07-Observabilidade.md","color":"3"},
+		{"id":"cb08000000000cb0","type":"file","x":230,"y":340,"width":260,"height":320,"file":"Regras-de-Negocio/Comunidades/08-Glossario.md","color":"3"},
+		{"id":"cb09000000000cb0","type":"file","x":660,"y":340,"width":260,"height":320,"file":"Regras-de-Negocio/Comunidades/09-Requisitos.md","color":"3"},
+		{"id":"cc01000000000cc0","type":"text","x":-1360,"y":-480,"width":260,"height":170,"text":"**Território e Catálogo**\n\nModelo, consultas públicas, eventos e os seeds que sustentam tudo","color":"1"},
+		{"id":"cc02000000000cc0","type":"text","x":-1360,"y":340,"width":260,"height":320,"text":"**Suporte e Rastreabilidade**\n\nErros (nenhum!), contratos, observabilidade, glossário e requisitos","color":"2"},
+		{"id":"cd01000000000cd0","type":"text","x":660,"y":-480,"width":280,"height":300,"text":"🧭 **Domínio somente-leitura**\n\nNenhum caso de uso de escrita.\nConteúdo nasce de seeds idempotentes com IDs fixos.\n\nOutros domínios dependem literalmente desses IDs — ver [[04-Dados-de-Referencia-e-Seeds]]","color":"2"}
+	],
+	"edges":[
+		{"id":"ce01000000000ce0","fromNode":"ca00000000000ca0","fromSide":"top","toNode":"cb01000000000cb0","toSide":"bottom","color":"1"},
+		{"id":"ce02000000000ce0","fromNode":"ca00000000000ca0","fromSide":"top","toNode":"cb02000000000cb0","toSide":"bottom","color":"1"},
+		{"id":"ce03000000000ce0","fromNode":"ca00000000000ca0","fromSide":"top","toNode":"cb03000000000cb0","toSide":"bottom","color":"1"},
+		{"id":"ce04000000000ce0","fromNode":"ca00000000000ca0","fromSide":"top","toNode":"cb04000000000cb0","toSide":"bottom","color":"6"},
+		{"id":"ce05000000000ce0","fromNode":"ca00000000000ca0","fromSide":"bottom","toNode":"cb05000000000cb0","toSide":"top","color":"2"},
+		{"id":"ce06000000000ce0","fromNode":"ca00000000000ca0","fromSide":"bottom","toNode":"cb06000000000cb0","toSide":"top","color":"3"},
+		{"id":"ce07000000000ce0","fromNode":"ca00000000000ca0","fromSide":"bottom","toNode":"cb07000000000cb0","toSide":"top","color":"3"},
+		{"id":"ce08000000000ce0","fromNode":"ca00000000000ca0","fromSide":"bottom","toNode":"cb08000000000cb0","toSide":"top","color":"3"},
+		{"id":"ce09000000000ce0","fromNode":"ca00000000000ca0","fromSide":"bottom","toNode":"cb09000000000cb0","toSide":"top","color":"3"},
+		{"id":"ce10000000000ce0","fromNode":"cc01000000000cc0","fromSide":"right","toNode":"cb01000000000cb0","toSide":"left","color":"1","toEnd":"none"},
+		{"id":"ce11000000000ce0","fromNode":"cc02000000000cc0","fromSide":"right","toNode":"cb05000000000cb0","toSide":"left","color":"2","toEnd":"none"},
+		{"id":"ce12000000000ce0","fromNode":"cd01000000000cd0","fromSide":"left","toNode":"cb04000000000cb0","toSide":"right","color":"2","toEnd":"none"}
+	]
+}

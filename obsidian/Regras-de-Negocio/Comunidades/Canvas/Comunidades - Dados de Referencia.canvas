@@ -1,0 +1,24 @@
+{
+	"nodes":[
+		{"id":"fa0seed000000fa0","type":"text","x":-180,"y":-560,"width":360,"height":130,"text":"# Seeds\n`prisma/seed.ts` + `prisma/seeds/`\n\nUpsert idempotente · IDs fixos mnemônicos","color":"6"},
+		{"id":"fb0users00000fb0","type":"text","x":-840,"y":-320,"width":300,"height":150,"text":"**Usuários** `a1b2c3d4-...`\n\nROOT, líderes e membros com senha padrão de seed\n\n`seeds/users.ts`","color":"4"},
+		{"id":"fc0categ00000fc0","type":"text","x":-480,"y":-320,"width":300,"height":150,"text":"**Categorias** `b1b2c3d4-...`\n\n0001 Climático · 0002 Ambiental\n0003 Infraestrutura · 0004 Saúde","color":"2"},
+		{"id":"fd0biomes0000fd0","type":"text","x":-120,"y":-320,"width":300,"height":150,"text":"**Biomas** `c1b2c3d4-...`\n\nAmazônia · Cerrado · Caatinga","color":"4"},
+		{"id":"fe0comm000000fe0","type":"text","x":240,"y":-320,"width":300,"height":150,"text":"**Comunidades** `d1b2c3d4-...`\n(+ conjunto paralelo em `seeds/communities.ts` com UUIDs próprios)","color":"4"},
+		{"id":"ff0events0000ff0","type":"text","x":600,"y":-320,"width":300,"height":150,"text":"**Eventos** `f0e79a10-...`\n\nsufixo = código do ícone climático (4000–4014); demais por slug","color":"4"},
+		{"id":"fg0health0000fg0","type":"text","x":-480,"y":-40,"width":340,"height":210,"text":"🔗 **Consumidor hardcoded 1**\n\n`HEALTH_ALERT_CATEGORY_ID`\n= Categoria Saúde `b1b2c3d4-0004-...0004`\n\nem `alerts/policies/health-alert-visibility.ts`\n\nToda a regra de [[04-Visibilidade-Alertas-Saude]] compara contra este UUID literal.","color":"1"},
+		{"id":"fh0coringa000fh0","type":"text","x":-80,"y":-40,"width":340,"height":210,"text":"🔗 **Consumidor hardcoded 2**\n\n`SINGLE_CLICK_LIKE_CONFIRMS_ALERT_USER_IDS`\n= Mariana Costa (MEMBER_3) `a1b2c3d4-0006-...0006`\n\nem `alerts/policies/single-click-alert-confirmation.ts`\n\nO \"membro coringa\" de [[03-Confirmacao-Comunitaria]] é esta conta de seed.","color":"1"},
+		{"id":"fi0warning000fi0","type":"text","x":320,"y":-40,"width":340,"height":210,"text":"⚠️ **Falha silenciosa**\n\nAmbiente sem estes seeds (ou com IDs regenerados): as duas políticas compilam normalmente, mas **nunca disparam**.\n\nNenhum teste ou verificação de startup valida a presença desses IDs hoje.","color":"2"}
+	],
+	"edges":[
+		{"id":"fj01000000000fj0","fromNode":"fa0seed000000fa0","fromSide":"bottom","toNode":"fb0users00000fb0","toSide":"top"},
+		{"id":"fj02000000000fj0","fromNode":"fa0seed000000fa0","fromSide":"bottom","toNode":"fc0categ00000fc0","toSide":"top"},
+		{"id":"fj03000000000fj0","fromNode":"fa0seed000000fa0","fromSide":"bottom","toNode":"fd0biomes0000fd0","toSide":"top"},
+		{"id":"fj04000000000fj0","fromNode":"fa0seed000000fa0","fromSide":"bottom","toNode":"fe0comm000000fe0","toSide":"top"},
+		{"id":"fj05000000000fj0","fromNode":"fa0seed000000fa0","fromSide":"bottom","toNode":"ff0events0000ff0","toSide":"top"},
+		{"id":"fj06000000000fj0","fromNode":"fc0categ00000fc0","fromSide":"bottom","toNode":"fg0health0000fg0","toSide":"top","label":"ID Saúde vira constante","color":"1"},
+		{"id":"fj07000000000fj0","fromNode":"fb0users00000fb0","fromSide":"bottom","toNode":"fh0coringa000fh0","toSide":"top","label":"ID MEMBER_3 vira constante","color":"1"},
+		{"id":"fj08000000000fj0","fromNode":"fg0health0000fg0","fromSide":"right","toNode":"fi0warning000fi0","toSide":"left","color":"2","toEnd":"none"},
+		{"id":"fj09000000000fj0","fromNode":"fh0coringa000fh0","fromSide":"right","toNode":"fi0warning000fi0","toSide":"left","color":"2","toEnd":"none"}
+	]
+}

@@ -1,0 +1,68 @@
+model User {
+  id                     String    @id @default(uuid())
+  status                 Status    @default(ACTIVED)
+  role                   UserRole  @default(MEMBER)
+  name                   String
+  cpf                    String    @unique
+  email                  String    @unique
+  emailRecovery          String?   @map("email_recovery")
+  phone                  String?
+  lastedLat              Float     @map("lasted_lat")
+  lastedLng              Float     @map("lasted_lng")
+  birthDate              DateTime  @map("birth_date")
+  avatarUrl              String?   @map("avatar_url")
+  password               String?
+  isVerified             Boolean   @default(false) @map("is_verified")
+  lastSignInAt           DateTime? @map("last_sign_in_at")
+  otpEnabled             Boolean   @default(false) @map("otp_enabled")
+  mapTutorialCompletedAt DateTime? @map("map_tutorial_completed_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sessions                Session[]
+  communities             Community[]
+  memberships             Membership[]
+  alerts                  Alert[]
+  alertComments           AlertComment[]
+  alertReactions          AlertReaction[]
+  otpChallenges           OtpChallenge[]
+  passwordResets          PasswordReset[]
+  userTerms               UserTerms[]
+  authorNotifications     Notification[]           @relation("AuthorNotifications")
+  receivedNotifications   Notification[]           @relation("RecipientNotifications")
+  accounts                Account[]
+  twoFactors              TwoFactor[]
+  twoFactorChallenges     TwoFactorChallenge[]
+  passwordResetChallenges PasswordResetChallenge[]
+
+  @@index([email, cpf, phone])
+  @@map("users")
+}
+
+model UserTerms {
+  id         String   @id @default(uuid())
+  acceptedAt DateTime @default(now()) @map("accepted_at")
+  ipAddress  String?
+  userAgent  String?
+  userId     String   @map("user_id")
+  user       User     @relation(fields: [userId], references: [id])
+  termsId    String   @map("terms_id")
+  terms      Terms    @relation(fields: [termsId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("user_terms")
+}
+
+enum UserRole {
+  MEMBER
+  LEADER
+  MANAGER
+  ROOT
+}
+
+enum Status {
+  ACTIVED
+  DISABLED
+  BLOCKED
+}

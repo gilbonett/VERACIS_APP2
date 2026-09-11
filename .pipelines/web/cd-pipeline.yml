@@ -1,0 +1,41 @@
+name: "[CD] VERACIS-WEB"
+trigger: none
+
+resources:
+  pipelines:
+    - pipeline: ci-web
+      source: "[CI] VERACIS-WEB"
+      trigger:
+        branches:
+          include: [main]
+        stages: [DockerBuildAndPush]
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - template: ../templates/cd-ecs-deploy.yml
+    parameters:
+      stageName: DeployWeb
+      stageDisplayName: "🧪 Deploy WEB"
+      deploymentName: DeployECSWeb
+      deploymentDisplayName: "Deploy WEB → ECS"
+      environmentName: testing
+      ciResourceName: ci-web
+      metadataArtifactName: build-metadata-web
+
+      ecrRepositoryVar: "$(ECR_WEB_REPOSITORY)"
+      ecsClusterVar: "$(ECS_CLUSTER)"
+      ecsServiceVar: "$(ECS_SERVICE_WEB)"
+      ecsTaskFamilyVar: "$(ECS_TASK_DEFINITION_FAMILY_WEB)"
+      ecsContainerVar: "$(ECS_CONTAINER_WEB)"
+      healthCheckUrlVar: "$(HEALTH_CHECK_WEB_URL)"
+
+      awsCredentials: "veracis-aws-oidc"
+      awsRegionVar: "$(AWS_REGION)"
+
+      variableGroups:
+        - Veracis-Registry
+        - Veracis-Deploy-Test
+
+      runMigration: false

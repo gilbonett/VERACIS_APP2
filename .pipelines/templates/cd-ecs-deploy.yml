@@ -1,0 +1,270 @@
+parameters:
+  - name: stageName
+    type: string
+  - name: stageDisplayName
+    type: string
+  - name: deploymentName
+    type: string
+  - name: deploymentDisplayName
+    type: string
+  - name: environmentName
+    type: string
+
+  - name: ciResourceName
+    type: string
+  - name: metadataArtifactName
+    type: string
+
+  - name: ecrRepositoryVar
+    type: string
+  - name: ecsClusterVar
+    type: string
+  - name: ecsServiceVar
+    type: string
+  - name: ecsTaskFamilyVar
+    type: string
+  - name: ecsContainerVar
+    type: string
+  - name: healthCheckUrlVar
+    type: string
+
+  - name: awsCredentials
+    type: string
+  - name: awsRegionVar
+    type: string
+
+  - name: variableGroups
+    type: object
+    default: []
+
+  - name: runMigration
+    type: boolean
+    default: false
+  - name: migrationCommand
+    type: string
+    default: ""
+
+stages:
+  - stage: ${{ parameters.stageName }}
+    displayName: ${{ parameters.stageDisplayName }}
+    jobs:
+      - deployment: ${{ parameters.deploymentName }}
+        displayName: ${{ parameters.deploymentDisplayName }}
+        environment: ${{ parameters.environmentName }}
+        timeoutInMinutes: 60
+        variables:
+          - ${{ each g in parameters.variableGroups }}:
+              - group: ${{ g }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: none
+
+                - task: DownloadPipelineArtifact@2
+                  displayName: "📥 Download build metadata from CI"
+                  inputs:
+                    source: specific
+                    project: $(System.TeamProjectId)
+                    pipeline: $(resources.pipeline.${{ parameters.ciResourceName }}.pipelineID)
+                    runVersion: specific
+                    runId: $(resources.pipeline.${{ parameters.ciResourceName }}.runID)
+                    artifact: ${{ parameters.metadataArtifactName }}
+                    path: $(Pipeline.Workspace)/build-metadata
+
+                - script: |
+                    set -euo pipefail
+                    METADATA="$(Pipeline.Workspace)/build-metadata/build-info.json"
+                    [ -f "${METADATA}" ] || { echo "❌ Metadata not found: ${METADATA}"; exit 1; }
+
+                    IMAGE_TAG=$(python3 -c "import json; d=json.load(open('${METADATA}')); print(d['imageTag'])")
+                    ECR_IMAGE_URI=$(python3 -c "import json; d=json.load(open('${METADATA}')); print(d['ecrImageUri'])")
+                    COMMIT_SHA=$(python3 -c "import json; d=json.load(open('${METADATA}')); print(d['commitSha'])")
+                    BUILD_DATE=$(python3 -c "import json; d=json.load(open('${METADATA}')); print(d['buildDate'])")
+
+                    echo "##vso[task.setvariable variable=IMAGE_TAG]${IMAGE_TAG}"
+                    echo "##vso[task.setvariable variable=ECR_IMAGE_URI]${ECR_IMAGE_URI}"
+                    echo "##vso[task.setvariable variable=COMMIT_SHA]${COMMIT_SHA}"
+                    echo "##vso[task.setvariable variable=BUILD_DATE]${BUILD_DATE}"
+
+                    echo "✅ Parsed metadata tag=${IMAGE_TAG}"
+                  displayName: "📄 Parse build metadata"
+
+                - task: AWSShellScript@1
+                  displayName: "🔍 Verify CI image in ECR"
+                  inputs:
+                    awsCredentials: "${{ parameters.awsCredentials }}"
+                    regionName: "${{ parameters.awsRegionVar }}"
+                    scriptType: "inline"
+                    inlineScript: |
+                      set -euo pipefail
+                      aws ecr describe-images \
+                        --repository-name "${{ parameters.ecrRepositoryVar }}" \
+                        --image-ids imageTag="$(IMAGE_TAG)" \
+                        --region "${{ parameters.awsRegionVar }}" \
+                        --query 'imageDetails[0].{tag:imageTags[0],pushed:imagePushedAt,sizeBytes:imageSizeInBytes,digest:imageDigest}' \
+                        --output table
+                      echo "✅ ECR image $(IMAGE_TAG) confirmed."
+
+                - task: AWSShellScript@1
+                  displayName: "📋 Register Task Definition"
+                  inputs:
+                    awsCredentials: "${{ parameters.awsCredentials }}"
+                    regionName: "${{ parameters.awsRegionVar }}"
+                    scriptType: "inline"
+                    inlineScript: |
+                      set -euo pipefail
+
+                      IMAGE="$(ECR_IMAGE_URI)"
+                      CONTAINER="${{ parameters.ecsContainerVar }}"
+                      FAMILY="${{ parameters.ecsTaskFamilyVar }}"
+                      REGION="${{ parameters.awsRegionVar }}"
+
+                      TMP_IN="$(mktemp /tmp/td-in.XXXXXX.json)"
+                      TMP_OUT="$(mktemp /tmp/td-out.XXXXXX.json)"
+
+                      aws ecs describe-task-definition \
+                        --task-definition "${FAMILY}" \
+                        --region "${REGION}" \
+                        --query 'taskDefinition' \
+                        --output json > "${TMP_IN}"
+
+                      python3 - "${CONTAINER}" "${IMAGE}" "${TMP_IN}" "${TMP_OUT}" << 'PY'
+                      import json, sys
+                      container, image, in_path, out_path = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+                      with open(in_path, "r", encoding="utf-8") as f:
+                          td = json.load(f)
+                      for k in ("taskDefinitionArn","revision","status","requiresAttributes","compatibilities","registeredAt","registeredBy"):
+                          td.pop(k, None)
+                      found = False
+                      for c in td.get("containerDefinitions", []):
+                          if c.get("name") == container:
+                              c["image"] = image
+                              found = True
+                              break
+                      if not found:
+                          raise SystemExit(f"Container not found in task definition: {container}")
+                      with open(out_path, "w", encoding="utf-8") as f:
+                          json.dump(td, f)
+                      PY
+
+                      python3 -m json.tool "${TMP_OUT}" > /dev/null
+
+                      NEW_ARN="$(aws ecs register-task-definition \
+                        --region "${REGION}" \
+                        --cli-input-json "file://${TMP_OUT}" \
+                        --query 'taskDefinition.taskDefinitionArn' \
+                        --output text)"
+
+                      rm -f "${TMP_IN}" "${TMP_OUT}"
+                      [ -n "${NEW_ARN}" ] && [ "${NEW_ARN}" != "None" ] || { echo "❌ Failed register task definition"; exit 1; }
+
+                      echo "##vso[task.setvariable variable=NEW_TASK_DEF_ARN]${NEW_ARN}"
+                      echo "✅ Registered: ${NEW_ARN}"
+
+                - ${{ if eq(parameters.runMigration, true) }}:
+                    - task: AWSShellScript@1
+                      displayName: "🗄️ Run database migration"
+                      inputs:
+                        awsCredentials: "${{ parameters.awsCredentials }}"
+                        regionName: "${{ parameters.awsRegionVar }}"
+                        scriptType: "inline"
+                        inlineScript: |
+                          set -euo pipefail
+
+                          CLUSTER="${{ parameters.ecsClusterVar }}"
+                          TASK_DEF="$(NEW_TASK_DEF_ARN)"
+                          CONTAINER="${{ parameters.ecsContainerVar }}"
+
+                          OVERRIDES="$(python3 -c "import json; print(json.dumps({'containerOverrides':[{'name':'${{ parameters.ecsContainerVar }}','command':['sh','-c','${{ parameters.migrationCommand }}']}]}))")"
+
+                          TASK_ARN="$(aws ecs run-task \
+                            --cluster "${CLUSTER}" \
+                            --task-definition "${TASK_DEF}" \
+                            --launch-type EC2 \
+                            --overrides "${OVERRIDES}" \
+                            --region "${{ parameters.awsRegionVar }}" \
+                            --query 'tasks[0].taskArn' \
+                            --output text)"
+
+                          [ -n "${TASK_ARN}" ] && [ "${TASK_ARN}" != "None" ] || { echo "❌ Failed to start migration task"; exit 1; }
+
+                          aws ecs wait tasks-stopped \
+                            --cluster "${CLUSTER}" \
+                            --tasks "${TASK_ARN}" \
+                            --region "${{ parameters.awsRegionVar }}"
+
+                          RESULT="$(aws ecs describe-tasks \
+                            --cluster "${CLUSTER}" \
+                            --tasks "${TASK_ARN}" \
+                            --region "${{ parameters.awsRegionVar }}" \
+                            --query 'tasks[0]' \
+                            --output json)"
+
+                          EXIT_CODE="$(echo "${RESULT}" | python3 -c "import json,sys; t=json.load(sys.stdin); n='${{ parameters.ecsContainerVar }}'; print(next((c.get('exitCode','NO_EXIT_CODE') for c in t.get('containers',[]) if c.get('name')==n),'CONTAINER_NOT_FOUND'))")"
+
+                          echo "Migration exit code: ${EXIT_CODE}"
+                          [ "${EXIT_CODE}" = "0" ] || { echo "❌ Migration failed"; echo "${RESULT}" | python3 -m json.tool; exit 1; }
+
+                - task: AWSShellScript@1
+                  displayName: "🚀 Update ECS Service"
+                  inputs:
+                    awsCredentials: "${{ parameters.awsCredentials }}"
+                    regionName: "${{ parameters.awsRegionVar }}"
+                    scriptType: "inline"
+                    inlineScript: |
+                      set -euo pipefail
+
+                      aws ecs update-service \
+                        --cluster "${{ parameters.ecsClusterVar }}" \
+                        --service "${{ parameters.ecsServiceVar }}" \
+                        --task-definition "$(NEW_TASK_DEF_ARN)" \
+                        --force-new-deployment \
+                        --region "${{ parameters.awsRegionVar }}" \
+                        --query 'service.{status:status,desired:desiredCount,running:runningCount,pending:pendingCount}' \
+                        --output table
+
+                - task: AWSShellScript@1
+                  displayName: "⏳ Wait for steady state"
+                  inputs:
+                    awsCredentials: "${{ parameters.awsCredentials }}"
+                    regionName: "${{ parameters.awsRegionVar }}"
+                    scriptType: "inline"
+                    inlineScript: |
+                      set -euo pipefail
+                      CLUSTER="${{ parameters.ecsClusterVar }}"
+                      SERVICE="${{ parameters.ecsServiceVar }}"
+                      REGION="${{ parameters.awsRegionVar }}"
+
+                      aws ecs wait services-stable --cluster "${CLUSTER}" --services "${SERVICE}" --region "${REGION}" || true
+
+                      SVC="$(aws ecs describe-services --cluster "${CLUSTER}" --services "${SERVICE}" --region "${REGION}" --query 'services[0]' --output json)"
+                      DESIRED="$(echo "${SVC}" | python3 -c "import sys,json; s=json.load(sys.stdin); print(s.get('desiredCount',0))")"
+                      RUNNING="$(echo "${SVC}" | python3 -c "import sys,json; s=json.load(sys.stdin); print(s.get('runningCount',0))")"
+                      PENDING="$(echo "${SVC}" | python3 -c "import sys,json; s=json.load(sys.stdin); print(s.get('pendingCount',0))")"
+                      FAILED="$(echo "${SVC}" | python3 -c "import sys,json; s=json.load(sys.stdin); print(sum(1 for d in s.get('deployments',[]) if d.get('rolloutState')=='FAILED'))")"
+
+                      echo "running=${RUNNING} desired=${DESIRED} pending=${PENDING} failed=${FAILED}"
+                      [ "${RUNNING}" -eq "${DESIRED}" ] && [ "${PENDING}" -eq 0 ] && [ "${FAILED}" -eq 0 ] && exit 0
+                      exit 1
+
+                - task: AWSShellScript@1
+                  displayName: "🧯 Failure diagnostics"
+                  condition: failed()
+                  inputs:
+                    awsCredentials: "${{ parameters.awsCredentials }}"
+                    regionName: "${{ parameters.awsRegionVar }}"
+                    scriptType: "inline"
+                    inlineScript: |
+                      set -euo pipefail
+                      CLUSTER="${{ parameters.ecsClusterVar }}"
+                      SERVICE="${{ parameters.ecsServiceVar }}"
+                      REGION="${{ parameters.awsRegionVar }}"
+
+                      aws ecs describe-services --cluster "${CLUSTER}" --services "${SERVICE}" --region "${REGION}" \
+                        --query 'services[0].{status:status,desired:desiredCount,running:runningCount,pending:pendingCount,taskDefinition:taskDefinition,deployments:deployments[].[id,status,rolloutState,desiredCount,runningCount,pendingCount]}' \
+                        --output json || true
+
+                      aws ecs describe-services --cluster "${CLUSTER}" --services "${SERVICE}" --region "${REGION}" \
+                        --query 'services[0].events[0:20].[createdAt,message]' \
+                        --output table || true

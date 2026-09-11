@@ -1,0 +1,20 @@
+{
+  "nodes": [
+    { "id": "y0start0000000y0", "type": "text", "x": -80, "y": -520, "width": 160, "height": 70, "text": "**Início**\n\nUser.create()", "color": "3" },
+
+    { "id": "y1actived0000y1a", "type": "text", "x": -180, "y": -340, "width": 360, "height": 150, "text": "## ACTIVED\n\nÚnico status atribuído hoje.\nTodo usuário nasce e permanece aqui — nenhum caso de uso altera este status.", "color": "4" },
+
+    { "id": "y2disabled000y2d", "type": "text", "x": -620, "y": 20, "width": 300, "height": 170, "text": "## DISABLED\n\n⚠️ `disable()` existe na entidade.\nNenhum caso de uso o chama.\n\n`AccountAlreadyDisabledError` nunca é lançado.", "color": "2" },
+
+    { "id": "y3blocked0000y3b", "type": "text", "x": 220, "y": 20, "width": 300, "height": 170, "text": "## BLOCKED\n\n⚠️ Existe apenas no tipo `UserStatus`.\nNenhum método, nenhum caso de uso, nenhuma atribuição em todo o código.", "color": "1" },
+
+    { "id": "y4gap00000000y4g", "type": "text", "x": -180, "y": 260, "width": 360, "height": 160, "text": "🚨 **Se você precisa bloquear/desativar contas**\n\nEsse fluxo não existe neste domínio hoje. Confirme se está implementado em outro lugar (ex.: autenticação) antes de assumir que falta implementar aqui.\n\nVer [[01-Ciclo-de-Vida-da-Conta]]" }
+  ],
+  "edges": [
+    { "id": "z1000000000000z1", "fromNode": "y0start0000000y0", "fromSide": "bottom", "toNode": "y1actived0000y1a", "toSide": "top", "label": "cadastro (qualquer papel)" },
+    { "id": "z2000000000000z2", "fromNode": "y1actived0000y1a", "fromSide": "bottom", "toNode": "y2disabled000y2d", "toSide": "top", "label": "disable() — sem chamador", "color": "2", "toEnd": "none" },
+    { "id": "z3000000000000z3", "fromNode": "y1actived0000y1a", "fromSide": "bottom", "toNode": "y3blocked0000y3b", "toSide": "top", "label": "nenhum método atribui BLOCKED", "color": "1", "toEnd": "none" },
+    { "id": "z4000000000000z4", "fromNode": "y2disabled000y2d", "fromSide": "bottom", "toNode": "y4gap00000000y4g", "toSide": "left", "toEnd": "none" },
+    { "id": "z5000000000000z5", "fromNode": "y3blocked0000y3b", "fromSide": "bottom", "toNode": "y4gap00000000y4g", "toSide": "right", "toEnd": "none" }
+  ]
+}

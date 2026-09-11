@@ -1,0 +1,599 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "VERACIS API — K6 Performance Dashboard | Filtrado por execução (testid)",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": true,
+      "title": "🖨️ Exportar PDF (Kiosk)",
+      "tooltip": "Abre em modo kiosk para impressão. Use Ctrl+P → Salvar como PDF",
+      "type": "link",
+      "url": "/d/veracis-k6-main?var-testid=${testid}&kiosk=tv"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 200,
+      "title": "📋 Execução Atual — $testid  |  Tipo: $test_type",
+      "type": "row",
+      "collapsed": false
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.01 },
+              { "color": "red", "value": 0.05 }
+            ]
+          },
+          "unit": "percentunit",
+          "mappings": [],
+          "noValue": "—"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "id": 1,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["mean"], "fields": "", "values": false },
+        "text": { "titleSize": 12, "valueSize": 28 }
+      },
+      "title": "Taxa de Erro",
+      "type": "stat",
+      "targets": [
+        {
+          "alias": "error rate",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT mean(\"value\") FROM \"http_req_failed\" WHERE $timeFilter AND \"testid\" = '$testid'",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 500 },
+              { "color": "red", "value": 1000 }
+            ]
+          },
+          "unit": "ms",
+          "mappings": [],
+          "noValue": "—"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "text": { "titleSize": 12, "valueSize": 28 }
+      },
+      "title": "p95 Latência",
+      "type": "stat",
+      "targets": [
+        {
+          "alias": "p95",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT percentile(\"value\", 95) FROM \"http_req_duration\" WHERE $timeFilter AND \"testid\" = '$testid'",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "orange", "value": 200 },
+              { "color": "red", "value": 400 }
+            ]
+          },
+          "unit": "short",
+          "mappings": [],
+          "noValue": "—"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "reduceOptions": { "calcs": ["max"] },
+        "text": { "titleSize": 12, "valueSize": 28 }
+      },
+      "title": "VUs Máximo",
+      "type": "stat",
+      "targets": [
+        {
+          "alias": "VUs",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT max(\"value\") FROM \"vus\" WHERE $timeFilter AND \"testid\" = '$testid'",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null }
+            ]
+          },
+          "unit": "reqps",
+          "mappings": [],
+          "noValue": "—"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "reduceOptions": { "calcs": ["mean"] },
+        "text": { "titleSize": 12, "valueSize": 28 }
+      },
+      "title": "Throughput Médio",
+      "type": "stat",
+      "targets": [
+        {
+          "alias": "req/s",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT non_negative_derivative(max(\"value\"), 1s) FROM \"http_reqs\" WHERE $timeFilter AND \"testid\" = '$testid' GROUP BY time($__interval)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 80 },
+              { "color": "green", "value": 98 }
+            ]
+          },
+          "unit": "percent",
+          "mappings": [],
+          "noValue": "—"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "text": { "titleSize": 12, "valueSize": 28 }
+      },
+      "title": "Checks OK (%)",
+      "type": "stat",
+      "targets": [
+        {
+          "alias": "checks %",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT (sum(\"passes\") / (sum(\"passes\") + sum(\"fails\"))) * 100 FROM \"checks\" WHERE $timeFilter AND \"testid\" = '$testid'",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 300 },
+              { "color": "red", "value": 800 }
+            ]
+          },
+          "unit": "ms",
+          "mappings": [],
+          "noValue": "—"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
+      "id": 6,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": { "calcs": ["mean"] },
+        "text": { "titleSize": 12, "valueSize": 28 }
+      },
+      "title": "p50 Mediana",
+      "type": "stat",
+      "targets": [
+        {
+          "alias": "p50",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT percentile(\"value\", 50) FROM \"http_req_duration\" WHERE $timeFilter AND \"testid\" = '$testid'",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 201,
+      "title": "⏱️ Latência por Percentil",
+      "type": "row",
+      "collapsed": false
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "lineWidth": 2, "fillOpacity": 5, "spanNulls": true, "gradientMode": "none" },
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "p50" }, "properties": [{ "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } }, { "id": "custom.lineWidth", "value": 1 }] },
+          { "matcher": { "id": "byName", "options": "p90" }, "properties": [{ "id": "color", "value": { "fixedColor": "#FADE2A", "mode": "fixed" } }, { "id": "custom.lineWidth", "value": 2 }] },
+          { "matcher": { "id": "byName", "options": "p95" }, "properties": [{ "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } }, { "id": "custom.lineWidth", "value": 2 }] },
+          { "matcher": { "id": "byName", "options": "p99" }, "properties": [{ "id": "color", "value": { "fixedColor": "#F2495C", "mode": "fixed" } }, { "id": "custom.lineWidth", "value": 3 }] }
+        ]
+      },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 6 },
+      "id": 10,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "Latência — p50 / p90 / p95 / p99",
+      "type": "timeseries",
+      "targets": [
+        {
+          "alias": "p50",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT percentile(\"value\", 50) FROM \"http_req_duration\" WHERE $timeFilter AND \"testid\" = '$testid' GROUP BY time($__interval) fill(null)",
+          "rawQuery": true, "refId": "A", "resultFormat": "time_series"
+        },
+        {
+          "alias": "p90",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT percentile(\"value\", 90) FROM \"http_req_duration\" WHERE $timeFilter AND \"testid\" = '$testid' GROUP BY time($__interval) fill(null)",
+          "rawQuery": true, "refId": "B", "resultFormat": "time_series"
+        },
+        {
+          "alias": "p95",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT percentile(\"value\", 95) FROM \"http_req_duration\" WHERE $timeFilter AND \"testid\" = '$testid' GROUP BY time($__interval) fill(null)",
+          "rawQuery": true, "refId": "C", "resultFormat": "time_series"
+        },
+        {
+          "alias": "p99",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT percentile(\"value\", 99) FROM \"http_req_duration\" WHERE $timeFilter AND \"testid\" = '$testid' GROUP BY time($__interval) fill(null)",
+          "rawQuery": true, "refId": "D", "resultFormat": "time_series"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 },
+      "id": 202,
+      "title": "📈 Throughput e Erros",
+      "type": "row",
+      "collapsed": false
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "fixedColor": "#5794F2", "mode": "fixed" },
+          "custom": { "lineWidth": 2, "fillOpacity": 15, "gradientMode": "opacity" }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "id": 11,
+      "options": {
+        "legend": { "displayMode": "list", "calcs": ["mean", "max"] },
+        "tooltip": { "mode": "single" }
+      },
+      "title": "Requisições por Segundo",
+      "type": "timeseries",
+      "targets": [
+        {
+          "alias": "req/s",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT non_negative_derivative(max(\"value\"), 1s) AS \"req/s\" FROM \"http_reqs\" WHERE $timeFilter AND \"testid\" = '$testid' GROUP BY time($__interval) fill(null)",
+          "rawQuery": true, "refId": "A", "resultFormat": "time_series"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "color": { "fixedColor": "#F2495C", "mode": "fixed" },
+          "custom": { "lineWidth": 2, "fillOpacity": 25, "gradientMode": "opacity" },
+          "min": 0,
+          "max": 1
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "id": 12,
+      "options": {
+        "legend": { "displayMode": "list", "calcs": ["mean", "max"] },
+        "tooltip": { "mode": "single" }
+      },
+      "title": "Taxa de Erros HTTP",
+      "type": "timeseries",
+      "targets": [
+        {
+          "alias": "error rate",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT mean(\"value\") FROM \"http_req_failed\" WHERE $timeFilter AND \"testid\" = '$testid' GROUP BY time($__interval) fill(null)",
+          "rawQuery": true, "refId": "A", "resultFormat": "time_series"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 24 },
+      "id": 203,
+      "title": "👥 VUs e Tempo de Resposta do Servidor",
+      "type": "row",
+      "collapsed": false
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "fixedColor": "#B877D9", "mode": "fixed" },
+          "custom": { "lineWidth": 2, "fillOpacity": 20, "gradientMode": "opacity" }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 25 },
+      "id": 13,
+      "options": {
+        "legend": { "displayMode": "list", "calcs": ["max", "mean"] },
+        "tooltip": { "mode": "single" }
+      },
+      "title": "VUs Ativos",
+      "type": "timeseries",
+      "targets": [
+        {
+          "alias": "VUs",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT max(\"value\") FROM \"vus\" WHERE $timeFilter AND \"testid\" = '$testid' GROUP BY time($__interval) fill(previous)",
+          "rawQuery": true, "refId": "A", "resultFormat": "time_series"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "lineWidth": 2, "fillOpacity": 5 }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "TTFB (waiting)" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "TCP (connecting)" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#FADE2A", "mode": "fixed" } }]
+          }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 25 },
+      "id": 14,
+      "options": {
+        "legend": { "displayMode": "list", "calcs": ["mean", "max"] },
+        "tooltip": { "mode": "multi" }
+      },
+      "title": "TTFB (p95) e Conexão TCP",
+      "type": "timeseries",
+      "targets": [
+        {
+          "alias": "TTFB (waiting)",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT percentile(\"value\", 95) FROM \"http_req_waiting\" WHERE $timeFilter AND \"testid\" = '$testid' GROUP BY time($__interval) fill(null)",
+          "rawQuery": true, "refId": "A", "resultFormat": "time_series"
+        },
+        {
+          "alias": "TCP (connecting)",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT percentile(\"value\", 95) FROM \"http_req_connecting\" WHERE $timeFilter AND \"testid\" = '$testid' GROUP BY time($__interval) fill(null)",
+          "rawQuery": true, "refId": "B", "resultFormat": "time_series"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 33 },
+      "id": 204,
+      "title": "🔍 Latência por Endpoint",
+      "type": "row",
+      "collapsed": false
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "lineWidth": 1, "fillOpacity": 0 }
+        }
+      },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 34 },
+      "id": 15,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max", "p95"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "p95 por Endpoint",
+      "type": "timeseries",
+      "targets": [
+        {
+          "alias": "$tag_endpoint",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT percentile(\"value\", 95) FROM \"http_req_duration\" WHERE $timeFilter AND \"testid\" = '$testid' AND \"endpoint\" != '' GROUP BY time($__interval), \"endpoint\" fill(null)",
+          "rawQuery": true, "refId": "A", "resultFormat": "time_series"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": {
+            "displayMode": "color-background",
+            "align": "auto"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 300 },
+              { "color": "orange", "value": 800 },
+              { "color": "red", "value": 1500 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 43 },
+      "id": 16,
+      "options": {
+        "footer": { "show": false },
+        "showHeader": true,
+        "sortBy": [{ "desc": true, "displayName": "max" }]
+      },
+      "title": "📊 Tabela de Latência por Endpoint (p50 / p95 / p99 / max)",
+      "type": "table",
+      "transformations": [
+        { "id": "groupBy", "options": {} },
+        { "id": "organize", "options": {} }
+      ],
+      "targets": [
+        {
+          "alias": "p50 - $tag_endpoint",
+          "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+          "query": "SELECT percentile(\"value\", 50) FROM \"http_req_duration\" WHERE $timeFilter AND \"testid\" = '$testid' AND \"endpoint\" != '' GROUP BY \"endpoint\"",
+          "rawQuery": true, "refId": "A", "resultFormat": "table"
+        }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": ["k6", "veracis", "performance", "influxdb-v1"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+        "definition": "SHOW TAG VALUES FROM \"http_reqs\" WITH KEY = \"testid\"",
+        "hide": 0,
+        "includeAll": false,
+        "label": "🔖 Execução (Test Run)",
+        "multi": false,
+        "name": "testid",
+        "options": [],
+        "query": "SHOW TAG VALUES FROM \"http_reqs\" WITH KEY = \"testid\"",
+        "refresh": 2,
+        "regex": "",
+        "sort": 2,
+        "type": "query",
+        "description": "Selecione a execução do teste. Cada run gera um ID único (tipo_YYYYMMDD_HHMMSS). Ordena do mais recente para o mais antigo."
+      },
+      {
+        "current": {},
+        "datasource": { "type": "influxdb", "uid": "InfluxDB-K6" },
+        "definition": "SHOW TAG VALUES FROM \"http_reqs\" WITH KEY = \"test_type\"",
+        "hide": 2,
+        "includeAll": false,
+        "label": "Tipo",
+        "multi": false,
+        "name": "test_type",
+        "options": [],
+        "query": "SHOW TAG VALUES FROM \"http_reqs\" WITH KEY = \"test_type\"",
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {
+    "refresh_intervals": ["5s", "10s", "30s", "1m", "5m"],
+    "time_options": ["5m", "15m", "30m", "1h", "3h", "6h", "12h", "24h"]
+  },
+  "timezone": "browser",
+  "title": "VERACIS — K6 Performance Dashboard",
+  "uid": "veracis-k6-main",
+  "version": 3
+}

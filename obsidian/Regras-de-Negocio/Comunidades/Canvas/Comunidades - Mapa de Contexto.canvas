@@ -1,0 +1,24 @@
+{
+  "nodes": [
+    { "id": "ea0core000000ea0", "type": "text", "x": -180, "y": -100, "width": 360, "height": 200, "text": "# Comunidades\n**Domínio de dados de referência**\n\nCommunity · Biome · Event (catálogo)\n\nSomente-leitura em runtime.\nTodos os domínios de negócio apontam para cá — nenhuma dependência sai daqui.", "color": "6" },
+
+    { "id": "eb0alerts0000eb0", "type": "text", "x": -820, "y": -420, "width": 340, "height": 220, "text": "## Alertas\n[[Alertas]]\n\n• todo alerta pertence a uma `communityId`\n• `eventIds` do catálogo na criação\n• política de saúde compara `categoryId` fixo do seed\n• métricas agregadas por comunidade", "color": "1" },
+
+    { "id": "ec0users00000ec0", "type": "text", "x": 500, "y": -420, "width": 340, "height": 220, "text": "## Usuários\n[[Usuarios]]\n\n• `Membership` liga usuário ↔ comunidade\n• cadastro exige `communityIds`\n• membro coringa da confirmação é conta de seed\n• listagem pública de comunidades alimenta o cadastro", "color": "4" },
+
+    { "id": "ed0notif00000ed0", "type": "text", "x": -820, "y": 240, "width": 340, "height": 200, "text": "## Notificações\n(`domain/notifications` — ainda não documentado)\n\n• `OnUserCreated` busca líderes por comunidade para avisar \"Novo Membro\"\n• broadcast por comunidade usa `GetUserIdsByCommunityIdUseCase`", "color": "5" },
+
+    { "id": "ee0categ00000ee0", "type": "text", "x": 500, "y": 240, "width": 340, "height": 200, "text": "## Categorias\n(`domain/categories` — ainda não documentado)\n\n• `Event.categoryId` aponta para cá\n• 4 categorias de seed: Climático, Ambiental, Infraestrutura, Saúde", "color": "5" },
+
+    { "id": "ef0seeds00000ef0", "type": "text", "x": -180, "y": 340, "width": 360, "height": 170, "text": "**Seeds** (`prisma/seed.ts` + `prisma/seeds/`)\n\nÚnica fonte de escrita deste domínio.\nIDs fixos consumidos como constantes em Alertas.\n\nVer [[04-Dados-de-Referencia-e-Seeds]]", "color": "2" },
+
+    { "id": "eg0legend0000eg0", "type": "text", "x": -180, "y": -420, "width": 360, "height": 130, "text": "**Leitura do mapa**\n\nSetas apontam de quem depende → para Comunidades. Domínios tracejados em cinza-azulado ainda não têm documentação própria no vault.", "color": "3" }
+  ],
+  "edges": [
+    { "id": "eh01000000000eh0", "fromNode": "eb0alerts0000eb0", "fromSide": "bottom", "toNode": "ea0core000000ea0", "toSide": "left", "label": "communityId · eventIds · categoryId", "color": "1" },
+    { "id": "eh02000000000eh0", "fromNode": "ec0users00000ec0", "fromSide": "bottom", "toNode": "ea0core000000ea0", "toSide": "right", "label": "Membership · communityIds no cadastro", "color": "4" },
+    { "id": "eh03000000000eh0", "fromNode": "ed0notif00000ed0", "fromSide": "top", "toNode": "ea0core000000ea0", "toSide": "left", "label": "líderes por comunidade", "color": "5" },
+    { "id": "eh04000000000eh0", "fromNode": "ea0core000000ea0", "fromSide": "right", "toNode": "ee0categ00000ee0", "toSide": "top", "label": "Event.categoryId (única seta que sai)", "color": "5" },
+    { "id": "eh05000000000eh0", "fromNode": "ef0seeds00000ef0", "fromSide": "top", "toNode": "ea0core000000ea0", "toSide": "bottom", "label": "popula (upsert idempotente)", "color": "2" }
+  ]
+}

@@ -1,0 +1,43 @@
+name: "[CI] VERACIS-API"
+
+trigger:
+  branches:
+    include: [main]
+  paths:
+    include:
+      - apps/api/**
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - package.json
+      - turbo.json
+    exclude:
+      - "**/*.md"
+      - "**/docs/**"
+
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - template: ../templates/ci-docker-ecr.yml
+    parameters:
+      stageName: DockerBuildAndPush
+      stageDisplayName: "🐳 Build & Push – API"
+      jobDisplayName: "Build API image (SHA) → ECR + Artifacts"
+      dockerImageName: "veracis-api"
+      dockerfilePath: "apps/api/Dockerfile"
+      dockerBuildContext: "."
+      dockerBuildArgs: '--build-arg DATABASE_URL="$(DATABASE_URL)"'
+      awsCredentials: "veracis-aws-oidc"
+      awsRegionVar: "$(AWS_REGION)"
+      ecrRegistryVar: "$(ECR_REGISTRY)"
+      ecrRepositoryVar: "$(ECR_API_REPOSITORY)"
+      pushImage: true
+      pushLatest: true
+      publishDockerTarArtifact: true
+      dockerArtifactName: "docker-image-api"
+      metadataArtifactName: "build-metadata-api"
+      variableGroups:
+        - Veracis-Api-Build-Variables
+        - Veracis-Registry

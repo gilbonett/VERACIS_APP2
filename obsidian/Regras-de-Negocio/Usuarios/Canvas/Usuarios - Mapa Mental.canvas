@@ -1,0 +1,37 @@
+{
+	"nodes":[
+		{"id":"u1u1u1u1u1u1u1u1","type":"text","x":-150,"y":-70,"width":300,"height":140,"text":"# Usuários\n\nDomínio de Negócio — Índice Mestre\n\n[[Usuarios]]","color":"6"},
+		{"id":"v0100000000000v0","type":"file","x":-1420,"y":-480,"width":260,"height":300,"file":"Regras-de-Negocio/Usuarios/01-Ciclo-de-Vida-da-Conta.md","color":"1"},
+		{"id":"v0200000000000v0","type":"file","x":-990,"y":-480,"width":260,"height":300,"file":"Regras-de-Negocio/Usuarios/02-Registro-de-Usuario.md","color":"1"},
+		{"id":"v0300000000000v0","type":"file","x":-560,"y":-480,"width":260,"height":300,"file":"Regras-de-Negocio/Usuarios/03-Perfil-e-Conta.md","color":"1"},
+		{"id":"v0400000000000v0","type":"file","x":-130,"y":-480,"width":260,"height":300,"file":"Regras-de-Negocio/Usuarios/04-Autenticacao-em-Duas-Etapas.md","color":"1"},
+		{"id":"v0500000000000v0","type":"file","x":300,"y":-480,"width":260,"height":300,"file":"Regras-de-Negocio/Usuarios/05-Vinculo-com-Comunidades.md","color":"6"},
+		{"id":"v0600000000000v0","type":"file","x":730,"y":-480,"width":260,"height":300,"file":"Regras-de-Negocio/Usuarios/06-Termos-de-Uso.md","color":"6"},
+		{"id":"v0700000000000v0","type":"file","x":1160,"y":-480,"width":260,"height":300,"file":"Regras-de-Negocio/Usuarios/07-Administracao-de-Usuarios.md","color":"4"},
+		{"id":"v0800000000000v0","type":"file","x":-1420,"y":340,"width":260,"height":350,"file":"Regras-de-Negocio/Usuarios/08-Eventos-de-Dominio.md","color":"2"},
+		{"id":"v0900000000000v0","type":"file","x":-990,"y":340,"width":260,"height":350,"file":"Regras-de-Negocio/Usuarios/09-Erros-de-Dominio.md","color":"2"},
+		{"id":"v1000000000000v0","type":"file","x":-560,"y":340,"width":260,"height":350,"file":"Regras-de-Negocio/Usuarios/10-Contratos-de-Repositorio.md","color":"3"},
+		{"id":"v1100000000000v0","type":"file","x":-130,"y":340,"width":260,"height":350,"file":"Regras-de-Negocio/Usuarios/11-Observabilidade.md","color":"3"},
+		{"id":"v1200000000000v0","type":"file","x":300,"y":340,"width":260,"height":350,"file":"Regras-de-Negocio/Usuarios/12-Glossario.md","color":"3"},
+		{"id":"v1300000000000v0","type":"file","x":730,"y":340,"width":260,"height":350,"file":"Regras-de-Negocio/Usuarios/13-Requisitos.md","color":"3"},
+		{"id":"w1w1w1w1w1w1w1w1","type":"text","x":-1720,"y":-480,"width":260,"height":160,"text":"**Conta e Identidade**\n\nCiclo de vida, registro, perfil e OTP","color":"1"},
+		{"id":"w2w2w2w2w2w2w2w2","type":"text","x":-1720,"y":340,"width":260,"height":350,"text":"**Suporte e Rastreabilidade**\n\nEventos, erros, contratos, observabilidade, glossário e requisitos","color":"2"}
+	],
+	"edges":[
+		{"id":"x0100000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"top","toNode":"v0100000000000v0","toSide":"bottom","color":"1"},
+		{"id":"x0200000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"top","toNode":"v0200000000000v0","toSide":"bottom","color":"1"},
+		{"id":"x0300000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"top","toNode":"v0300000000000v0","toSide":"bottom","color":"1"},
+		{"id":"x0400000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"top","toNode":"v0400000000000v0","toSide":"bottom","color":"1"},
+		{"id":"x0500000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"top","toNode":"v0500000000000v0","toSide":"bottom","color":"6"},
+		{"id":"x0600000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"top","toNode":"v0600000000000v0","toSide":"bottom","color":"6"},
+		{"id":"x0700000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"top","toNode":"v0700000000000v0","toSide":"bottom","color":"4"},
+		{"id":"x0800000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"bottom","toNode":"v0800000000000v0","toSide":"top","color":"2"},
+		{"id":"x0900000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"bottom","toNode":"v0900000000000v0","toSide":"top","color":"2"},
+		{"id":"x1000000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"bottom","toNode":"v1000000000000v0","toSide":"top","color":"3"},
+		{"id":"x1100000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"bottom","toNode":"v1100000000000v0","toSide":"top","color":"3"},
+		{"id":"x1200000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"bottom","toNode":"v1200000000000v0","toSide":"top","color":"3"},
+		{"id":"x1300000000000x0","fromNode":"u1u1u1u1u1u1u1u1","fromSide":"bottom","toNode":"v1300000000000v0","toSide":"top","color":"3"},
+		{"id":"x2000000000000x0","fromNode":"w1w1w1w1w1w1w1w1","fromSide":"right","toNode":"v0100000000000v0","toSide":"left","color":"1","toEnd":"none"},
+		{"id":"x2100000000000x0","fromNode":"w2w2w2w2w2w2w2w2","fromSide":"right","toNode":"v0800000000000v0","toSide":"left","color":"2","toEnd":"none"}
+	]
+}
